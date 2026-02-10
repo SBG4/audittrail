@@ -1,4 +1,5 @@
 import type { UserInfo } from "./case";
+import type { FileBatch } from "./file-batch";
 
 export interface TimelineEvent {
   id: string;
@@ -14,6 +15,7 @@ export interface TimelineEvent {
   sort_order: number;
   created_by_id: string;
   created_by: UserInfo | null;
+  file_batches: FileBatch[];
   created_at: string;
   updated_at: string;
 }
