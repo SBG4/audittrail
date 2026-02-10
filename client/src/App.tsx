@@ -3,6 +3,7 @@ import LoginPage from "./pages/LoginPage.tsx";
 import CaseListPage from "./pages/CaseListPage.tsx";
 import CaseCreatePage from "./pages/CaseCreatePage.tsx";
 import CaseDetailPage from "./pages/CaseDetailPage.tsx";
+import CaseReviewPage from "./pages/CaseReviewPage.tsx";
 import ImportPage from "./pages/ImportPage.tsx";
 import FieldMappingsPage from "./pages/FieldMappingsPage.tsx";
 import AuthGuard from "./components/AuthGuard.tsx";
@@ -18,6 +19,7 @@ export default function App() {
             <Route index element={<CaseListPage />} />
             <Route path="/cases/new" element={<CaseCreatePage />} />
             <Route path="/cases/:id" element={<CaseDetailPage />} />
+            <Route path="/cases/:id/review" element={<CaseReviewPage />} />
             <Route path="/cases/:id/import" element={<ImportPage />} />
             <Route path="/settings/jira-mappings" element={<FieldMappingsPage />} />
           </Route>

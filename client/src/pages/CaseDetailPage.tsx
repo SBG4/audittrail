@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ClipboardCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,6 +16,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useCase, useUpdateCase, useDeleteCase } from "@/hooks/useCases";
+import { getCaseCompleteness, getCompletenessScore } from "@/lib/completeness";
 import LifecycleControl from "@/components/cases/LifecycleControl";
 import AssigneeSelect from "@/components/cases/AssigneeSelect";
 import CaseMetadata from "@/components/cases/CaseMetadata";
@@ -210,11 +211,19 @@ export default function CaseDetailPage() {
             onStatusChange={handleStatusChange}
             disabled={isUpdating}
           />
-          <AssigneeSelect
-            currentAssigneeId={case_.assigned_to_id}
-            onAssign={handleAssign}
-            disabled={isUpdating}
-          />
+          <div className="flex items-center gap-3">
+            <AssigneeSelect
+              currentAssigneeId={case_.assigned_to_id}
+              onAssign={handleAssign}
+              disabled={isUpdating}
+            />
+            <Button asChild variant="outline" size="sm">
+              <Link to={`/cases/${id}/review`}>
+                <ClipboardCheck className="size-4 mr-1" />
+                Review ({getCompletenessScore(getCaseCompleteness(case_)).percentage}%)
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
 
