@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ case_title }} - Audit Report</title>
+    <style>
+        /* ===== CSS Reset ===== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ===== Base Typography ===== */
+        html {
+            font-size: 16px;
+            line-height: 1.6;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #0f172a;
+            background-color: #f8fafc;
+            min-height: 100vh;
+        }
+
+        /* ===== Layout ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ===== Report Header ===== */
+        .report-header {
+            background-color: #1e293b;
+            color: #f8fafc;
+            padding: 40px 0;
+            margin-bottom: 32px;
+        }
+
+        .report-header .container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .report-title {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1.2;
+            color: #ffffff;
+        }
+
+        .report-subtitle {
+            font-size: 1rem;
+            color: #94a3b8;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .report-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            letter-spacing: 0.025em;
+        }
+
+        .badge-case-number {
+            background-color: #334155;
+            color: #e2e8f0;
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+        }
+
+        .badge-status {
+            text-transform: uppercase;
+        }
+
+        .badge-status-open {
+            background-color: #3b82f6;
+            color: #ffffff;
+        }
+
+        .badge-status-active {
+            background-color: #22c55e;
+            color: #ffffff;
+        }
+
+        .badge-status-closed {
+            background-color: #64748b;
+            color: #ffffff;
+        }
+
+        .report-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .report-meta-item {
+            font-size: 0.875rem;
+        }
+
+        .report-meta-label {
+            color: #94a3b8;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 2px;
+        }
+
+        .report-meta-value {
+            color: #e2e8f0;
+        }
+
+        /* ===== Section Headers ===== */
+        .section {
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        /* ===== Dashboard Stats Cards ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0f172a;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.8125rem;
+            color: #64748b;
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* ===== Charts ===== */
+        .chart-container {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .chart-container .js-plotly-plot {
+            width: 100% !important;
+        }
+
+        /* ===== Events Timeline Table ===== */
+        .events-table-wrapper {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .events-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        .events-table thead {
+            background-color: #f1f5f9;
+        }
+
+        .events-table th {
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #475569;
+            border-bottom: 2px solid #e2e8f0;
+            white-space: nowrap;
+        }
+
+        .events-table td {
+            padding: 10px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: top;
+        }
+
+        .events-table tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .events-table .event-type-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .type-finding {
+            background-color: #fef2f2;
+            color: #ef4444;
+        }
+
+        .type-action {
+            background-color: #f0fdf4;
+            color: #16a34a;
+        }
+
+        .type-note {
+            background-color: #eef2ff;
+            color: #6366f1;
+        }
+
+        .file-count {
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .file-description {
+            color: #475569;
+            max-width: 300px;
+        }
+
+        /* ===== File Batches (nested) ===== */
+        .batch-row {
+            background-color: #fafbfc;
+        }
+
+        .batch-row td {
+            padding: 6px 16px 6px 40px;
+            font-size: 0.8125rem;
+            color: #64748b;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .batch-label {
+            font-weight: 500;
+            color: #475569;
+        }
+
+        .batch-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #cbd5e1;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        /* ===== Case Metadata ===== */
+        .metadata-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+        }
+
+        .metadata-item {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .metadata-key {
+            font-size: 0.75rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+
+        .metadata-value {
+            font-size: 0.9375rem;
+            color: #0f172a;
+            font-weight: 500;
+        }
+
+        .metadata-empty {
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        /* ===== Case Description ===== */
+        .description-block {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+            white-space: pre-wrap;
+            color: #334155;
+            line-height: 1.7;
+        }
+
+        /* ===== Report Footer ===== */
+        .report-footer {
+            margin-top: 48px;
+            padding: 24px 0;
+            border-top: 2px solid #e2e8f0;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.8125rem;
+        }
+
+        .report-footer-brand {
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        /* ===== Empty State ===== */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #94a3b8;
+            font-size: 0.9375rem;
+        }
+
+        /* ===== Print Styles ===== */
+        @media print {
+            body {
+                background-color: #ffffff;
+                font-size: 11pt;
+            }
+
+            .report-header {
+                background-color: #1e293b !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                padding: 24px 0;
+            }
+
+            .container {
+                max-width: 100%;
+                padding: 0 16px;
+            }
+
+            .chart-container {
+                page-break-inside: avoid;
+            }
+
+            .events-table-wrapper {
+                page-break-inside: auto;
+            }
+
+            .events-table tr {
+                page-break-inside: avoid;
+            }
+
+            .stat-card, .metadata-item {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .report-footer {
+                page-break-before: avoid;
+            }
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .report-title {
+                font-size: 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+
+            .events-table {
+                font-size: 0.8125rem;
+            }
+
+            .events-table th,
+            .events-table td {
+                padding: 8px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Report Header -->
+    <header class="report-header">
+        <div class="container">
+            <h1 class="report-title">{{ case_title }}</h1>
+            <div class="report-subtitle">
+                <span class="report-badge badge-case-number">#{{ case_number }}</span>
+                <span class="report-badge badge-status badge-status-{{ case_status }}">{{ case_status }}</span>
+                {% if audit_type_name %}
+                <span>{{ audit_type_name }}</span>
+                {% endif %}
+            </div>
+            <div class="report-meta">
+                {% if assigned_to %}
+                <div class="report-meta-item">
+                    <div class="report-meta-label">Assigned To</div>
+                    <div class="report-meta-value">{{ assigned_to }}</div>
+                </div>
+                {% endif %}
+                {% if created_by %}
+                <div class="report-meta-item">
+                    <div class="report-meta-label">Created By</div>
+                    <div class="report-meta-value">{{ created_by }}</div>
+                </div>
+                {% endif %}
+                <div class="report-meta-item">
+                    <div class="report-meta-label">Generated</div>
+                    <div class="report-meta-value">{{ generated_at }}</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Dashboard Stats -->
+        <section class="section">
+            <h2 class="section-title">Dashboard Overview</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">{{ stats.total_events }}</div>
+                    <div class="stat-label">Total Events</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ stats.total_file_batches }}</div>
+                    <div class="stat-label">File Batches</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ stats.total_files }}</div>
+                    <div class="stat-label">Total Files</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">
+                        {% if stats.date_range_start and stats.date_range_end %}
+                            {% if stats.date_range_start == stats.date_range_end %}
+                                1
+                            {% else %}
+                                {{ stats.date_range_days }}
+                            {% endif %}
+                        {% else %}
+                            0
+                        {% endif %}
+                    </div>
+                    <div class="stat-label">Days Span</div>
+                </div>
+            </div>
+        </section>
+
+        {% if case_description %}
+        <section class="section">
+            <h2 class="section-title">Description</h2>
+            <div class="description-block">{{ case_description }}</div>
+        </section>
+        {% endif %}
+
+        <!-- Interactive Charts -->
+        {% if timeline_chart_html %}
+        <section class="section">
+            <h2 class="section-title">Event Timeline</h2>
+            <div class="chart-container">
+                {{ timeline_chart_html | safe }}
+            </div>
+        </section>
+        {% endif %}
+
+        {% if stats_chart_html %}
+        <section class="section">
+            <h2 class="section-title">Events by Type</h2>
+            <div class="chart-container">
+                {{ stats_chart_html | safe }}
+            </div>
+        </section>
+        {% endif %}
+
+        {% if daily_chart_html %}
+        <section class="section">
+            <h2 class="section-title">Daily Activity</h2>
+            <div class="chart-container">
+                {{ daily_chart_html | safe }}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Case Metadata -->
+        {% if metadata and metadata | length > 0 %}
+        <section class="section">
+            <h2 class="section-title">Case Metadata</h2>
+            <div class="metadata-grid">
+                {% for key, value in metadata.items() %}
+                <div class="metadata-item">
+                    <div class="metadata-key">{{ key | replace("_", " ") }}</div>
+                    <div class="metadata-value">
+                        {% if value %}
+                            {{ value }}
+                        {% else %}
+                            <span class="metadata-empty">Not provided</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Events Timeline Table -->
+        <section class="section">
+            <h2 class="section-title">Event Details</h2>
+            {% if events and events | length > 0 %}
+            <div class="events-table-wrapper">
+                <table class="events-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Type</th>
+                            <th>File Name</th>
+                            <th>Count</th>
+                            <th>Description</th>
+                            <th>File Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in events %}
+                        <tr>
+                            <td>{{ event.event_date }}</td>
+                            <td>{{ event.event_time if event.event_time else "—" }}</td>
+                            <td>
+                                <span class="event-type-badge type-{{ event.event_type }}">
+                                    {{ event.event_type }}
+                                </span>
+                            </td>
+                            <td>{{ event.file_name if event.file_name else "—" }}</td>
+                            <td class="file-count">{{ event.file_count if event.file_count is not none else "—" }}</td>
+                            <td class="file-description">{{ event.file_description if event.file_description else "—" }}</td>
+                            <td>{{ event.file_type if event.file_type else "—" }}</td>
+                        </tr>
+                        {% if event.file_batches and event.file_batches | length > 0 %}
+                            {% for batch in event.file_batches %}
+                            <tr class="batch-row">
+                                <td colspan="3">
+                                    <span class="batch-indicator"></span>
+                                    <span class="batch-label">{{ batch.label }}</span>
+                                </td>
+                                <td>{{ batch.file_types if batch.file_types else "—" }}</td>
+                                <td class="file-count">{{ batch.file_count }}</td>
+                                <td colspan="2">{{ batch.description if batch.description else "—" }}</td>
+                            </tr>
+                            {% endfor %}
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">No events recorded for this case.</div>
+            {% endif %}
+        </section>
+    </main>
+
+    <!-- Report Footer -->
+    <footer class="report-footer">
+        <div class="container">
+            <p>
+                Generated by <span class="report-footer-brand">AuditTrail</span>
+                &middot; {{ generated_at }}
+            </p>
+            <p>This report is self-contained and works offline. All data and charts are embedded in this file.</p>
+        </div>
+    </footer>
+</body>
+</html>
