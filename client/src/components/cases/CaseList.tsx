@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { getCaseCompleteness, getCompletenessScore } from "@/lib/completeness";
 import type { Case } from "@/types/case";
 
 interface CaseListProps {
@@ -97,6 +98,7 @@ export default function CaseList({
               <TableHead>Type</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Assigned To</TableHead>
+              <TableHead className="w-[80px]">Complete</TableHead>
               <TableHead className="w-[100px]">Updated</TableHead>
             </TableRow>
           </TableHeader>
@@ -123,6 +125,26 @@ export default function CaseList({
                   ) : (
                     <span className="text-muted-foreground">Unassigned</span>
                   )}
+                </TableCell>
+                <TableCell>
+                  {(() => {
+                    const score = getCompletenessScore(getCaseCompleteness(c));
+                    return score.percentage < 100 ? (
+                      <Badge
+                        variant="outline"
+                        className="bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-700"
+                      >
+                        {score.percentage}%
+                      </Badge>
+                    ) : (
+                      <Badge
+                        variant="outline"
+                        className="bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-700"
+                      >
+                        100%
+                      </Badge>
+                    );
+                  })()}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
                   {formatRelativeDate(c.updated_at)}

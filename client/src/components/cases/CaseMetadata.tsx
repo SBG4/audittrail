@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import SchemaForm from "@/components/cases/SchemaForm";
 import JiraImportPanel from "@/components/jira/JiraImportPanel";
+import { isEmpty } from "@/lib/completeness";
 import type { Case } from "@/types/case";
 
 interface CaseMetadataProps {
@@ -81,15 +82,18 @@ export default function CaseMetadata({ case_, onSave }: CaseMetadataProps) {
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
         {entries.map(([key, property]) => {
           const value = case_.metadata[key];
+          const fieldEmpty = isEmpty(value);
           return (
             <div key={key} className="space-y-1">
               <p className="text-xs font-medium text-muted-foreground">
                 {property.title || key}
               </p>
-              {value != null && value !== "" ? (
-                <p className="text-sm text-foreground">{String(value)}</p>
+              {fieldEmpty ? (
+                <p className="text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded px-2 py-0.5 inline-block">
+                  Missing
+                </p>
               ) : (
-                <p className="text-sm text-muted-foreground italic">Not set</p>
+                <p className="text-sm text-foreground">{String(value)}</p>
               )}
             </div>
           );

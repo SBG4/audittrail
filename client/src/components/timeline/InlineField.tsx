@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { isEmpty } from "@/lib/completeness";
 
 interface InlineFieldProps {
   value: string | number | null;
@@ -63,12 +64,15 @@ export default function InlineField({
   }
 
   if (!editing) {
-    const displayValue = value != null && value !== "" ? String(value) : null;
+    const fieldIsEmpty = isEmpty(value);
 
     return (
       <span
         className={cn(
-          "inline-block cursor-pointer rounded px-2 py-1 hover:bg-muted/50 min-w-[2rem]",
+          "inline-block cursor-pointer rounded px-2 py-1 min-w-[2rem]",
+          fieldIsEmpty
+            ? "bg-amber-50 border border-amber-200 text-amber-600 dark:bg-amber-900/20 dark:border-amber-700 dark:text-amber-400"
+            : "hover:bg-muted/50",
           className
         )}
         onClick={startEditing}
@@ -77,10 +81,10 @@ export default function InlineField({
         role="button"
         title="Click to edit"
       >
-        {displayValue ?? (
-          <span className="text-muted-foreground italic text-xs">
-            {placeholder}
-          </span>
+        {fieldIsEmpty ? (
+          <span className="text-xs italic">{placeholder}</span>
+        ) : (
+          String(value)
         )}
       </span>
     );
