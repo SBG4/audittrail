@@ -1,8 +1,21 @@
-function App() {
+import { BrowserRouter, Routes, Route, Navigate } from "react-router";
+import LoginPage from "./pages/LoginPage.tsx";
+import DashboardPage from "./pages/DashboardPage.tsx";
+import AuthGuard from "./components/AuthGuard.tsx";
+import Layout from "./components/Layout.tsx";
+
+export default function App() {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
-      <h1 className="text-2xl font-bold text-gray-900">AuditTrail</h1>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route element={<AuthGuard />}>
+          <Route element={<Layout />}>
+            <Route index element={<DashboardPage />} />
+          </Route>
+        </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
-export default App;

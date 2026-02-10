@@ -30,7 +30,7 @@ interface AuthState {
   initialize: () => Promise<void>;
 }
 
-export const useAuthStore = create<AuthState>()((set, get) => ({
+export const useAuthStore = create<AuthState>()((set, _get) => ({
   token: null,
   user: null,
   isAuthenticated: false,
