@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 ## Current Position
 
 Phase: 2 of 9 (Audit Schemas & Cases)
-Plan: 3 of 5 in current phase
+Plan: 4 of 5 in current phase
 Status: Executing
-Last activity: 2026-02-10 -- Completed 02-03-PLAN.md (Case Creation UI with schema-driven forms)
+Last activity: 2026-02-10 -- Completed 02-04-PLAN.md (Case List Dashboard with filters and pagination)
 
-Progress: [=======░░░] 19%
+Progress: [========░░] 22%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
+- Total plans completed: 8
 - Average duration: 5min
-- Total execution time: 0.5 hours
+- Total execution time: 0.6 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-infrastructure-auth | 4/4 | 26min | 7min |
-| 02-audit-schemas-cases | 3/5 | 8min | 3min |
+| 02-audit-schemas-cases | 4/5 | 12min | 3min |
 
 **Recent Trend:**
-- Last 5 plans: 01-03 (4min), 01-04 (2min), 02-01 (2min), 02-02 (3min), 02-03 (3min)
+- Last 5 plans: 01-04 (2min), 02-01 (2min), 02-02 (3min), 02-03 (3min), 02-04 (4min)
 - Trend: stable-fast
 
 *Updated after each plan completion*
@@ -70,6 +70,9 @@ Recent decisions affecting current work:
 - [02-03]: SchemaForm renders fields dynamically from JsonSchema.properties with type-based input mapping
 - [02-03]: Audit type selection resets metadata to empty object to prevent stale field values
 - [02-03]: Added patch method and 204 response handling to api helper for full CRUD support
+- [02-04]: Replaced DashboardPage with CaseListPage as index route for immediate case management access
+- [02-04]: Used sentinel __all__ values for Radix Select since empty string values are not supported
+- [02-04]: Added /cases/:id placeholder route to enable row click navigation before 02-05
 
 ### Pending Todos
 
@@ -84,5 +87,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-10
-Stopped at: Completed 02-03-PLAN.md (Case Creation UI with schema-driven forms)
-Resume file: .planning/phases/02-audit-schemas-cases/02-03-SUMMARY.md
+Stopped at: Completed 02-04-PLAN.md (Case List Dashboard with filters and pagination)
+Resume file: .planning/phases/02-audit-schemas-cases/02-04-SUMMARY.md
