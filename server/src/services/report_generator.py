@@ -4,17 +4,32 @@ Provides a shared data collection pipeline for all report formats (PDF, DOCX, HT
 and rendering functions for each format.
 """
 
+import asyncio
 import uuid
+from functools import partial
+from pathlib import Path
 from datetime import datetime, timezone
 
 from fastapi import HTTPException, status
+from jinja2 import Environment, FileSystemLoader
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
+from weasyprint import HTML
 
 from src.models.case import Case
 from src.models.event import Event
 from src.models.user import User
+
+# Template setup
+_TEMPLATES_DIR = Path(__file__).resolve().parent.parent / "templates"
+_jinja_env = Environment(loader=FileSystemLoader(str(_TEMPLATES_DIR)))
+
+# Template name mapping
+_TEMPLATE_MAP = {
+    "timeline": "reports/timeline.html",
+    "narrative": "reports/narrative.html",
+}
 
 
 async def collect_report_data(
@@ -139,3 +154,29 @@ async def collect_report_data(
         "generated_at": now.strftime("%Y-%m-%d %H:%M UTC"),
         "generated_by": current_user.full_name,
     }
+
+
+def _generate_pdf_sync(mode: str, data: dict) -> bytes:
+    """Render HTML template and convert to PDF using WeasyPrint (sync).
+
+    This is CPU-bound and must be called via run_in_executor.
+    """
+    template_name = _TEMPLATE_MAP.get(mode, _TEMPLATE_MAP["timeline"])
+    template = _jinja_env.get_template(template_name)
+    html_string = template.render(**data)
+    html_doc = HTML(
+        string=html_string,
+        base_url=str(_TEMPLATES_DIR / "reports"),
+    )
+    return html_doc.write_pdf()
+
+
+async def generate_pdf(mode: str, data: dict) -> bytes:
+    """Generate a PDF report asynchronously.
+
+    Runs WeasyPrint in a thread pool executor to avoid blocking the event loop.
+    """
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(
+        None, partial(_generate_pdf_sync, mode, data)
+    )
