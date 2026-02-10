@@ -1,0 +1,6 @@
+services:
+  api:
+    ports:
+      - "8000:8000"
+    environment:
+      PYTHONDONTWRITEBYTECODE: 1

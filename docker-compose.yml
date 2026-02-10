@@ -1,0 +1,44 @@
+services:
+  db:
+    image: postgres:17-slim
+    environment:
+      POSTGRES_DB: audittrail
+      POSTGRES_USER: ${DB_USER:-audittrail}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-audittrail}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-audittrail} -d audittrail"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${DB_USER:-audittrail}:${DB_PASSWORD:-audittrail}@db:5432/audittrail
+      DATABASE_URL_SYNC: postgresql+psycopg2://${DB_USER:-audittrail}:${DB_PASSWORD:-audittrail}@db:5432/audittrail
+      SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
+      ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 480
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    ports:
+      - "${APP_PORT:-80}:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
