@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useCreateFileBatch, useUpdateFileBatch } from "@/hooks/useFileBatches";
+import { BatchTemplates } from "./BatchTemplates";
+import type { BatchTemplate } from "@/data/batch-templates";
 import type { FileBatch } from "@/types/file-batch";
 
 interface BatchFormProps {
@@ -20,6 +22,8 @@ export function BatchForm({ caseId, eventId, batch, onClose }: BatchFormProps) {
   const [fileCount, setFileCount] = useState<number>(batch?.file_count ?? 0);
   const [fileTypes, setFileTypes] = useState(batch?.file_types ?? "");
   const [description, setDescription] = useState(batch?.description ?? "");
+
+  const fileCountRef = useRef<HTMLInputElement>(null);
 
   const createMutation = useCreateFileBatch(caseId, eventId);
   const updateMutation = useUpdateFileBatch(caseId, eventId);
@@ -47,19 +51,22 @@ export function BatchForm({ caseId, eventId, batch, onClose }: BatchFormProps) {
     }
   }
 
-  // Public method for template pre-filling (called from parent)
-  function applyTemplate(defaults: {
-    label?: string;
-    description?: string;
-    file_types?: string;
-  }) {
+  function handleTemplateSelect(template: BatchTemplate) {
+    const defaults = template.defaults;
     if (defaults.label !== undefined) setLabel(defaults.label);
     if (defaults.description !== undefined) setDescription(defaults.description);
     if (defaults.file_types !== undefined) setFileTypes(defaults.file_types);
+
+    // Focus file_count since templates don't set it and it's the first empty required field
+    setTimeout(() => fileCountRef.current?.focus(), 0);
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3 rounded-md border p-3">
+      {!isEditing && (
+        <BatchTemplates onSelect={handleTemplateSelect} />
+      )}
+
       <div className="space-y-1.5">
         <Label htmlFor="batch-label">Label</Label>
         <Input
@@ -75,6 +82,7 @@ export function BatchForm({ caseId, eventId, batch, onClose }: BatchFormProps) {
       <div className="space-y-1.5">
         <Label htmlFor="batch-file-count">File Count</Label>
         <Input
+          ref={fileCountRef}
           id="batch-file-count"
           type="number"
           value={fileCount}
@@ -127,6 +135,3 @@ export function BatchForm({ caseId, eventId, batch, onClose }: BatchFormProps) {
     </form>
   );
 }
-
-// Export applyTemplate helper for external use
-BatchForm.displayName = "BatchForm";
