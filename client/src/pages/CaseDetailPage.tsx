@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router";
-import { ArrowLeft, ClipboardCheck } from "lucide-react";
+import { ArrowLeft, ClipboardCheck, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,6 +21,8 @@ import LifecycleControl from "@/components/cases/LifecycleControl";
 import AssigneeSelect from "@/components/cases/AssigneeSelect";
 import CaseMetadata from "@/components/cases/CaseMetadata";
 import TimelineView from "@/components/timeline/TimelineView";
+import ReportDownloadButton from "@/components/reports/ReportDownloadButton";
+import ReportDialog from "@/components/reports/ReportDialog";
 
 export default function CaseDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -35,6 +37,7 @@ export default function CaseDetailPage() {
   const [editingDescription, setEditingDescription] = useState(false);
   const [descriptionValue, setDescriptionValue] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
 
   function showFeedback(message: string) {
@@ -232,6 +235,7 @@ export default function CaseDetailPage() {
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="timeline">Timeline</TabsTrigger>
+          <TabsTrigger value="reports">Reports</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6 pt-4">
@@ -348,6 +352,24 @@ export default function CaseDetailPage() {
 
         <TabsContent value="timeline" className="pt-4">
           <TimelineView caseId={id!} />
+        </TabsContent>
+
+        <TabsContent value="reports" className="space-y-6 pt-4">
+          <div className="space-y-4">
+            <h3 className="text-sm font-medium text-muted-foreground">
+              Generate Reports
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              Download a self-contained HTML report with interactive charts.
+              The report works offline -- just open the .html file in any browser.
+            </p>
+            <ReportDownloadButton caseId={id!} />
+            <p className="text-xs text-muted-foreground mt-4">
+              The HTML report includes dashboard statistics, an interactive event
+              timeline, and detailed event data. All charts support hover, zoom,
+              and pan.
+            </p>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
