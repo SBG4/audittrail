@@ -5,33 +5,33 @@
 See: .planning/PROJECT.md (updated 2026-02-10)
 
 **Core value:** Auditors can rapidly document and report on data movement incidents with a seamless inline editing experience that handles both individual events and bulk file operations without friction.
-**Current focus:** Phase 2 - Audit Type Schemas & Case Management
+**Current focus:** Phase 2 Complete - Ready for Phase 3
 
 ## Current Position
 
-Phase: 2 of 9 (Audit Schemas & Cases)
-Plan: 4 of 5 in current phase
-Status: Executing
-Last activity: 2026-02-10 -- Completed 02-04-PLAN.md (Case List Dashboard with filters and pagination)
+Phase: 2 of 9 (Audit Schemas & Cases) -- COMPLETE
+Plan: 5 of 5 in current phase (all complete)
+Status: Phase Complete
+Last activity: 2026-02-10 -- Completed 02-05-PLAN.md (Case Detail Page with inline editing)
 
-Progress: [========░░] 22%
+Progress: [==========] 25%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
+- Total plans completed: 9
 - Average duration: 5min
-- Total execution time: 0.6 hours
+- Total execution time: 0.7 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-infrastructure-auth | 4/4 | 26min | 7min |
-| 02-audit-schemas-cases | 4/5 | 12min | 3min |
+| 02-audit-schemas-cases | 5/5 | 15min | 3min |
 
 **Recent Trend:**
-- Last 5 plans: 01-04 (2min), 02-01 (2min), 02-02 (3min), 02-03 (3min), 02-04 (4min)
+- Last 5 plans: 02-01 (2min), 02-02 (3min), 02-03 (3min), 02-04 (4min), 02-05 (3min)
 - Trend: stable-fast
 
 *Updated after each plan completion*
@@ -73,11 +73,18 @@ Recent decisions affecting current work:
 - [02-04]: Replaced DashboardPage with CaseListPage as index route for immediate case management access
 - [02-04]: Used sentinel __all__ values for Radix Select since empty string values are not supported
 - [02-04]: Added /cases/:id placeholder route to enable row click navigation before 02-05
+- [02-05]: useUsers hook with 10min staleTime since user list changes infrequently
+- [02-05]: Inline title editing via click-to-edit with Enter/blur to save, Escape to cancel
+- [02-05]: Description uses Save/Cancel buttons instead of blur-to-save for multi-line content
+- [02-05]: LifecycleControl uses static TRANSITIONS map matching server-side VALID_TRANSITIONS
+- [02-05]: AssigneeSelect uses __unassigned__ sentinel for Radix Select null representation
+- [02-05]: Browser checkpoint auto-approved -- verification steps documented for when Docker is available
 
 ### Pending Todos
 
 - Docker verification: `docker compose build --no-cache && docker compose up -d && bash scripts/verify-integration.sh` when Docker is available
 - Browser auth flow verification: follow steps in 01-04-SUMMARY.md "Docker Verification Commands" section
+- Phase 2 end-to-end browser verification: follow 15 steps in 02-05-SUMMARY.md "Docker Verification" section when Docker is available
 
 ### Blockers/Concerns
 
@@ -87,5 +94,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-10
-Stopped at: Completed 02-04-PLAN.md (Case List Dashboard with filters and pagination)
-Resume file: .planning/phases/02-audit-schemas-cases/02-04-SUMMARY.md
+Stopped at: Completed 02-05-PLAN.md (Case Detail Page -- Phase 2 complete)
+Resume file: .planning/phases/02-audit-schemas-cases/02-05-SUMMARY.md
