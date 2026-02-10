@@ -7,6 +7,7 @@ from src.routers.events import router as events_router
 from src.routers.file_batches import router as file_batches_router
 from src.routers.imports import router as imports_router
 from src.routers.jira import router as jira_router
+from src.routers.reports import router as reports_router
 from src.routers.users import router as users_router
 
 app = FastAPI(title="AuditTrail", root_path="/api")
@@ -18,6 +19,7 @@ app.include_router(events_router)
 app.include_router(file_batches_router)
 app.include_router(imports_router)
 app.include_router(jira_router)
+app.include_router(reports_router)
 app.include_router(users_router)
 
 
