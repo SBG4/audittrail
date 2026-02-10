@@ -52,14 +52,14 @@ Plans:
   3. User can set case lifecycle state (open, active, closed) and assign a case to a team member
   4. User can view a list of all cases with filtering by status and searching by case details
   5. User can delete a case
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] 02-01: Audit type schema registry (JSON Schema definitions in database for USB and email types)
-- [ ] 02-02: Cases API (CRUD, lifecycle states, assignment, filtering/search)
-- [ ] 02-03: Schema-driven case creation UI with auto-populated metadata forms
-- [ ] 02-04: Case list dashboard with filtering, search, and inline metadata editing
-- [ ] 02-05: Case detail view with tabs, lifecycle controls, and assignment
+- [ ] 02-01-PLAN.md -- Audit type schema registry (AuditType model, JSONB schema column, migration, CRUD endpoints, USB/email seed data)
+- [ ] 02-02-PLAN.md -- Cases API (Case model, JSONB metadata, CRUD with schema validation, lifecycle states, assignment, filtering/search)
+- [ ] 02-03-PLAN.md -- Schema-driven case creation UI (TanStack Query, TypeScript types, SchemaForm component, CaseCreatePage)
+- [ ] 02-04-PLAN.md -- Case list dashboard (CaseListPage with CaseFilters, CaseList table, status badges, pagination)
+- [ ] 02-05-PLAN.md -- Case detail view (CaseDetailPage with tabs, inline metadata editing, lifecycle controls, assignment, delete)
 
 ### Phase 3: Timeline & Events
 **Goal**: Auditors can build and edit a chronological timeline of events within a case using fast inline editing as their primary data entry workflow
