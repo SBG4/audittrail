@@ -34,13 +34,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. User can log out from any page and is redirected to the login screen
   4. Application starts via `docker compose up` with no internet access required after image build
   5. Database data persists after running `docker compose down` and `docker compose up` again
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 01-01: Docker Compose stack (FastAPI + PostgreSQL + Nginx) with named volumes and --network none gate
-- [ ] 01-02: Database schema, migrations (Alembic), and user seed data
-- [ ] 01-03: JWT authentication (login, session persistence, logout) with React login page
-- [ ] 01-04: React SPA skeleton with routing, auth guards, and basic layout shell
+- [ ] 01-01-PLAN.md -- Docker Compose stack with FastAPI, PostgreSQL, Nginx, all Dockerfiles, and project scaffolding
+- [ ] 01-02-PLAN.md -- Database layer (SQLAlchemy, Alembic, User model, seed data) and JWT auth endpoints
+- [ ] 01-03-PLAN.md -- React SPA with login page, Zustand auth store, AuthGuard, Layout shell, and routing
+- [ ] 01-04-PLAN.md -- Integration verification: rebuild images, end-to-end auth flow, persistence test, airgap check
 
 ### Phase 2: Audit Type Schemas & Case Management
 **Goal**: Auditors can create, edit, and manage audit cases with schema-driven metadata fields that auto-populate based on the selected audit type
