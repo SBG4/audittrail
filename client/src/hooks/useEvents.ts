@@ -33,7 +33,40 @@ export function useUpdateEvent(caseId: string) {
   return useMutation({
     mutationFn: ({ id, ...body }: UpdateEventRequest & { id: string }) =>
       api.patch<TimelineEvent>(`/api/cases/${caseId}/events/${id}`, body),
-    onSuccess: () => {
+    onMutate: async (newData) => {
+      // Cancel in-flight queries to avoid overwriting optimistic update
+      await queryClient.cancelQueries({ queryKey: ["events", caseId] });
+
+      // Snapshot previous value for rollback
+      const previous = queryClient.getQueryData<EventListResponse>([
+        "events",
+        caseId,
+      ]);
+
+      // Optimistically update the cache
+      queryClient.setQueryData<EventListResponse>(
+        ["events", caseId],
+        (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            items: old.items.map((e) =>
+              e.id === newData.id ? { ...e, ...newData } : e
+            ),
+          };
+        }
+      );
+
+      return { previous };
+    },
+    onError: (_err, _data, context) => {
+      // Rollback to previous value on error
+      if (context?.previous) {
+        queryClient.setQueryData(["events", caseId], context.previous);
+      }
+    },
+    onSettled: () => {
+      // Refetch to ensure cache is in sync with server
       queryClient.invalidateQueries({ queryKey: ["events", caseId] });
     },
   });

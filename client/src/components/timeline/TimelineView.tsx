@@ -1,7 +1,12 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TimelineRow from "./TimelineRow";
-import { useEvents, useCreateEvent, useDeleteEvent } from "@/hooks/useEvents";
+import {
+  useEvents,
+  useCreateEvent,
+  useUpdateEvent,
+  useDeleteEvent,
+} from "@/hooks/useEvents";
 
 interface TimelineViewProps {
   caseId: string;
@@ -10,6 +15,7 @@ interface TimelineViewProps {
 export default function TimelineView({ caseId }: TimelineViewProps) {
   const { data, isLoading, error } = useEvents(caseId);
   const createEvent = useCreateEvent(caseId);
+  const updateEvent = useUpdateEvent(caseId);
   const deleteEvent = useDeleteEvent(caseId);
 
   function handleAddEvent() {
@@ -17,6 +23,17 @@ export default function TimelineView({ caseId }: TimelineViewProps) {
     createEvent.mutate({
       event_type: "note",
       event_date: today,
+    });
+  }
+
+  function handleFieldUpdate(
+    eventId: string,
+    field: string,
+    value: unknown
+  ) {
+    updateEvent.mutate({
+      id: eventId,
+      [field]: value,
     });
   }
 
@@ -104,7 +121,9 @@ export default function TimelineView({ caseId }: TimelineViewProps) {
                 <TimelineRow
                   key={event.id}
                   event={event}
+                  onFieldUpdate={handleFieldUpdate}
                   onDelete={handleDelete}
+                  isUpdating={updateEvent.isPending}
                   isDeleting={deleteEvent.isPending}
                 />
               ))}

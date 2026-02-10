@@ -1,50 +1,141 @@
+import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import EventTypeIcon from "./EventTypeIcon";
+import InlineField from "./InlineField";
 import type { TimelineEvent } from "@/types/event";
 
 interface TimelineRowProps {
   event: TimelineEvent;
+  onFieldUpdate: (
+    eventId: string,
+    field: string,
+    value: unknown
+  ) => void;
   onDelete: (eventId: string) => void;
+  isUpdating?: boolean;
   isDeleting?: boolean;
 }
 
+const EVENT_TYPES = ["finding", "action", "note"] as const;
+
 export default function TimelineRow({
   event,
+  onFieldUpdate,
   onDelete,
+  isUpdating,
   isDeleting,
 }: TimelineRowProps) {
+  const [typeSelectOpen, setTypeSelectOpen] = useState(false);
+
+  function handleFieldSave(field: string, value: string) {
+    let parsed: unknown = value;
+
+    if (field === "file_count") {
+      parsed = value === "" ? null : parseInt(value, 10);
+      if (typeof parsed === "number" && isNaN(parsed)) parsed = null;
+    } else if (field === "event_time") {
+      parsed = value === "" ? null : value;
+    } else if (field === "file_name" || field === "file_description" || field === "file_type") {
+      parsed = value === "" ? null : value;
+    }
+
+    onFieldUpdate(event.id, field, parsed);
+  }
+
   return (
-    <tr className="border-b last:border-b-0 hover:bg-muted/30">
+    <tr
+      className={`border-b last:border-b-0 hover:bg-muted/30 ${
+        isUpdating ? "opacity-70" : ""
+      }`}
+    >
+      {/* Event type - click to cycle */}
       <td className="px-3 py-2">
-        <EventTypeIcon type={event.event_type} />
-      </td>
-      <td className="px-3 py-2 text-sm whitespace-nowrap">
-        {event.event_date}
-      </td>
-      <td className="px-3 py-2 text-sm whitespace-nowrap text-muted-foreground">
-        {event.event_time ?? "--:--"}
-      </td>
-      <td className="px-3 py-2 text-sm">
-        {event.file_name ?? (
-          <span className="text-muted-foreground italic">--</span>
+        {typeSelectOpen ? (
+          <select
+            autoFocus
+            value={event.event_type}
+            onChange={(e) => {
+              onFieldUpdate(event.id, "event_type", e.target.value);
+              setTypeSelectOpen(false);
+            }}
+            onBlur={() => setTypeSelectOpen(false)}
+            className="h-7 rounded border border-input bg-background px-1 text-xs outline-none ring-ring focus:ring-1"
+          >
+            {EVENT_TYPES.map((t) => (
+              <option key={t} value={t}>
+                {t.charAt(0).toUpperCase() + t.slice(1)}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <button
+            onClick={() => setTypeSelectOpen(true)}
+            className="cursor-pointer"
+            title="Click to change type"
+          >
+            <EventTypeIcon type={event.event_type} />
+          </button>
         )}
       </td>
-      <td className="px-3 py-2 text-sm text-center">
-        {event.file_count ?? (
-          <span className="text-muted-foreground">--</span>
-        )}
+
+      {/* Date */}
+      <td className="px-3 py-2">
+        <InlineField
+          value={event.event_date}
+          onSave={(v) => handleFieldSave("event_date", v)}
+          type="date"
+        />
       </td>
-      <td className="px-3 py-2 text-sm max-w-[200px] truncate">
-        {event.file_description ?? (
-          <span className="text-muted-foreground italic">--</span>
-        )}
+
+      {/* Time */}
+      <td className="px-3 py-2">
+        <InlineField
+          value={event.event_time}
+          onSave={(v) => handleFieldSave("event_time", v)}
+          type="time"
+          placeholder="--:--"
+        />
       </td>
-      <td className="px-3 py-2 text-sm">
-        {event.file_type ?? (
-          <span className="text-muted-foreground italic">--</span>
-        )}
+
+      {/* File Name */}
+      <td className="px-3 py-2">
+        <InlineField
+          value={event.file_name}
+          onSave={(v) => handleFieldSave("file_name", v)}
+          placeholder="File name..."
+        />
       </td>
+
+      {/* File Count */}
+      <td className="px-3 py-2">
+        <InlineField
+          value={event.file_count}
+          onSave={(v) => handleFieldSave("file_count", v)}
+          type="number"
+          placeholder="0"
+        />
+      </td>
+
+      {/* File Description */}
+      <td className="px-3 py-2">
+        <InlineField
+          value={event.file_description}
+          onSave={(v) => handleFieldSave("file_description", v)}
+          placeholder="Description..."
+        />
+      </td>
+
+      {/* File Type */}
+      <td className="px-3 py-2">
+        <InlineField
+          value={event.file_type}
+          onSave={(v) => handleFieldSave("file_type", v)}
+          placeholder="File type..."
+        />
+      </td>
+
+      {/* Delete */}
       <td className="px-3 py-2">
         <Button
           variant="ghost"
