@@ -37,6 +37,10 @@ async function request<T>(
     throw new Error(message);
   }
 
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
   return response.json() as Promise<T>;
 }
 
@@ -64,6 +68,14 @@ export const api = {
   put<T>(url: string, body: unknown): Promise<T> {
     return request<T>(url, {
       method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+  },
+
+  patch<T>(url: string, body: unknown): Promise<T> {
+    return request<T>(url, {
+      method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
