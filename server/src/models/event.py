@@ -45,3 +45,10 @@ class Event(Base):
     # Relationships
     case = relationship("Case", lazy="selectin")
     created_by = relationship("User", lazy="selectin")
+    file_batches = relationship(
+        "FileBatch",
+        back_populates="event",
+        lazy="selectin",
+        order_by="FileBatch.sort_order",
+        cascade="all, delete-orphan",
+    )

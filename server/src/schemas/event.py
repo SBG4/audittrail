@@ -3,6 +3,7 @@ from datetime import date, datetime, time
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from src.schemas.file_batch import FileBatchRead
 from src.schemas.user import UserRead
 
 
@@ -42,6 +43,7 @@ class EventRead(BaseModel):
     sort_order: int
     created_by_id: uuid.UUID
     created_by: UserRead | None = None
+    file_batches: list[FileBatchRead] = []
     created_at: datetime
     updated_at: datetime
 
