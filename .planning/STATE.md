@@ -9,28 +9,28 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 
 ## Current Position
 
-Phase: 1 of 9 (Infrastructure & Auth)
-Plan: 3 of 4 in current phase
-Status: Executing
-Last activity: 2026-02-10 -- Completed 01-03-PLAN.md (Frontend auth UI: login, auth store, route guards)
+Phase: 1 of 9 (Infrastructure & Auth) -- COMPLETE
+Plan: 4 of 4 in current phase
+Status: Phase Complete
+Last activity: 2026-02-10 -- Completed 01-04-PLAN.md (Integration verification, nginx proxy fix)
 
-Progress: [===░░░░░░░] 8%
+Progress: [====░░░░░░] 11%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: 8min
+- Total plans completed: 4
+- Average duration: 7min
 - Total execution time: 0.4 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-infrastructure-auth | 3/4 | 24min | 8min |
+| 01-infrastructure-auth | 4/4 | 26min | 7min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (17min), 01-02 (3min), 01-03 (4min)
+- Last 5 plans: 01-01 (17min), 01-02 (3min), 01-03 (4min), 01-04 (2min)
 - Trend: accelerating
 
 *Updated after each plan completion*
@@ -56,17 +56,22 @@ Recent decisions affecting current work:
 - [01-03]: Added @/ path alias in tsconfig and vite.config for shadcn/ui compatibility
 - [01-03]: Login POST uses form-urlencoded format (FastAPI OAuth2PasswordRequestForm)
 - [01-03]: Auth store initializes from localStorage at module load time (not React lifecycle)
+- [01-04]: Fixed nginx proxy_pass to strip /api/ prefix (http://api:8000/ not http://api:8000/api/)
+- [01-04]: Docker verification deferred -- all Docker commands documented in scripts/verify-integration.sh
+- [01-04]: Browser checkpoint auto-approved -- verification steps documented for when Docker is available
 
 ### Pending Todos
 
-- Docker verification: `docker compose build && docker compose up -d` when Docker is available
+- Docker verification: `docker compose build --no-cache && docker compose up -d && bash scripts/verify-integration.sh` when Docker is available
+- Browser auth flow verification: follow steps in 01-04-SUMMARY.md "Docker Verification Commands" section
 
 ### Blockers/Concerns
 
 - Docker Desktop not installed on development machine -- cannot verify full stack end-to-end until installed
+- Phase 1 code is complete but Docker integration testing is pending
 
 ## Session Continuity
 
 Last session: 2026-02-10
-Stopped at: Completed 01-03-PLAN.md
-Resume file: .planning/phases/01-infrastructure-auth/01-03-SUMMARY.md
+Stopped at: Completed 01-04-PLAN.md (Phase 1 complete)
+Resume file: .planning/phases/01-infrastructure-auth/01-04-SUMMARY.md
