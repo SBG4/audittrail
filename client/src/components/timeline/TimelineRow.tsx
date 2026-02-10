@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import EventTypeIcon from "./EventTypeIcon";
@@ -32,6 +32,22 @@ export default function TimelineRow({
   isLastRow,
 }: TimelineRowProps) {
   const [typeSelectOpen, setTypeSelectOpen] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const confirmTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Auto-reset confirm state after 3 seconds
+  useEffect(() => {
+    if (confirmDelete) {
+      confirmTimerRef.current = setTimeout(() => {
+        setConfirmDelete(false);
+      }, 3000);
+    }
+    return () => {
+      if (confirmTimerRef.current) {
+        clearTimeout(confirmTimerRef.current);
+      }
+    };
+  }, [confirmDelete]);
 
   function handleFieldSave(field: string, value: string) {
     let parsed: unknown = value;
@@ -140,17 +156,33 @@ export default function TimelineRow({
         />
       </td>
 
-      {/* Delete */}
+      {/* Delete with two-click confirmation */}
       <td className="px-3 py-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="size-7 p-0 text-muted-foreground hover:text-destructive"
-          onClick={() => onDelete(event.id)}
-          disabled={isDeleting}
-        >
-          <Trash2 className="size-3.5" />
-        </Button>
+        {confirmDelete ? (
+          <Button
+            variant="destructive"
+            size="sm"
+            className="h-7 px-2 text-xs"
+            onClick={() => {
+              setConfirmDelete(false);
+              onDelete(event.id);
+            }}
+            onBlur={() => setConfirmDelete(false)}
+            disabled={isDeleting}
+          >
+            {isDeleting ? "..." : "Confirm?"}
+          </Button>
+        ) : (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="size-7 p-0 text-muted-foreground hover:text-destructive"
+            onClick={() => setConfirmDelete(true)}
+            disabled={isDeleting}
+          >
+            <Trash2 className="size-3.5" />
+          </Button>
+        )}
       </td>
     </tr>
   );

@@ -1,4 +1,6 @@
-import { Plus } from "lucide-react";
+import { useState, useRef, useCallback, useEffect } from "react";
+import { Plus, Undo2 } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import TimelineRow from "./TimelineRow";
 import {
@@ -7,16 +9,31 @@ import {
   useUpdateEvent,
   useDeleteEvent,
 } from "@/hooks/useEvents";
+import type { TimelineEvent, EventListResponse } from "@/types/event";
 
 interface TimelineViewProps {
   caseId: string;
 }
 
 export default function TimelineView({ caseId }: TimelineViewProps) {
+  const queryClient = useQueryClient();
   const { data, isLoading, error } = useEvents(caseId);
   const createEvent = useCreateEvent(caseId);
   const updateEvent = useUpdateEvent(caseId);
   const deleteEvent = useDeleteEvent(caseId);
+
+  // Undo state
+  const [deletedEvent, setDeletedEvent] = useState<TimelineEvent | null>(null);
+  const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (undoTimerRef.current) {
+        clearTimeout(undoTimerRef.current);
+      }
+    };
+  }, []);
 
   function handleAddEvent() {
     const today = new Date().toISOString().split("T")[0];
@@ -37,9 +54,81 @@ export default function TimelineView({ caseId }: TimelineViewProps) {
     });
   }
 
-  function handleDelete(eventId: string) {
-    deleteEvent.mutate(eventId);
-  }
+  const handleDelete = useCallback(
+    (eventId: string) => {
+      // Find the event to store for undo
+      const events = data?.items ?? [];
+      const eventToDelete = events.find((e) => e.id === eventId);
+      if (!eventToDelete) return;
+
+      // Store for undo
+      setDeletedEvent(eventToDelete);
+
+      // Optimistically remove from cache
+      queryClient.setQueryData<EventListResponse>(
+        ["events", caseId],
+        (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            items: old.items.filter((e) => e.id !== eventId),
+            total: old.total - 1,
+          };
+        }
+      );
+
+      // Clear any existing timer
+      if (undoTimerRef.current) {
+        clearTimeout(undoTimerRef.current);
+      }
+
+      // Start 5-second undo window, then permanently delete
+      undoTimerRef.current = setTimeout(() => {
+        deleteEvent.mutate(eventId, {
+          onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ["events", caseId] });
+          },
+        });
+        setDeletedEvent(null);
+        undoTimerRef.current = null;
+      }, 5000);
+    },
+    [caseId, data, deleteEvent, queryClient]
+  );
+
+  const handleUndo = useCallback(() => {
+    if (!deletedEvent) return;
+
+    // Cancel the pending delete
+    if (undoTimerRef.current) {
+      clearTimeout(undoTimerRef.current);
+      undoTimerRef.current = null;
+    }
+
+    // Restore event to cache
+    queryClient.setQueryData<EventListResponse>(
+      ["events", caseId],
+      (old) => {
+        if (!old) return old;
+        const restored = [...old.items, deletedEvent].sort((a, b) => {
+          const dateCompare = a.event_date.localeCompare(b.event_date);
+          if (dateCompare !== 0) return dateCompare;
+          const timeA = a.event_time ?? "";
+          const timeB = b.event_time ?? "";
+          const timeCompare = timeA.localeCompare(timeB);
+          if (timeCompare !== 0) return timeCompare;
+          return a.sort_order - b.sort_order;
+        });
+        return {
+          ...old,
+          items: restored,
+          total: old.total + 1,
+        };
+      }
+    );
+
+    setDeletedEvent(null);
+  }, [caseId, deletedEvent, queryClient]);
 
   if (isLoading) {
     return (
@@ -77,7 +166,7 @@ export default function TimelineView({ caseId }: TimelineViewProps) {
       </div>
 
       {/* Empty state */}
-      {events.length === 0 && (
+      {events.length === 0 && !deletedEvent && (
         <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-12">
           <p className="text-muted-foreground">
             No events yet. Add the first event to start building the timeline.
@@ -128,6 +217,24 @@ export default function TimelineView({ caseId }: TimelineViewProps) {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* Undo banner */}
+      {deletedEvent && (
+        <div className="flex items-center justify-between rounded-md border bg-muted px-4 py-2">
+          <span className="text-sm text-muted-foreground">
+            Event deleted.
+          </span>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-primary underline-offset-4 hover:underline"
+            onClick={handleUndo}
+          >
+            <Undo2 className="size-3.5 mr-1" />
+            Undo
+          </Button>
         </div>
       )}
 
