@@ -10,17 +10,17 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 ## Current Position
 
 Phase: 2 of 9 (Audit Schemas & Cases)
-Plan: 1 of 5 in current phase
+Plan: 2 of 5 in current phase
 Status: Executing
-Last activity: 2026-02-10 -- Completed 02-01-PLAN.md (Audit type schema registry)
+Last activity: 2026-02-10 -- Completed 02-02-PLAN.md (Cases API with CRUD, lifecycle, filtering)
 
-Progress: [=====░░░░░] 14%
+Progress: [======░░░░] 17%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
-- Average duration: 6min
+- Total plans completed: 6
+- Average duration: 5min
 - Total execution time: 0.5 hours
 
 **By Phase:**
@@ -28,10 +28,10 @@ Progress: [=====░░░░░] 14%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-infrastructure-auth | 4/4 | 26min | 7min |
-| 02-audit-schemas-cases | 1/5 | 2min | 2min |
+| 02-audit-schemas-cases | 2/5 | 5min | 3min |
 
 **Recent Trend:**
-- Last 5 plans: 01-02 (3min), 01-03 (4min), 01-04 (2min), 02-01 (2min)
+- Last 5 plans: 01-02 (3min), 01-03 (4min), 01-04 (2min), 02-01 (2min), 02-02 (3min)
 - Trend: accelerating
 
 *Updated after each plan completion*
@@ -63,6 +63,9 @@ Recent decisions affecting current work:
 - [02-01]: Used schema_ with alias='schema' and serialization_alias='schema' to avoid Pydantic BaseModel.schema conflict
 - [02-01]: Read-only router (GET list + GET detail) -- no POST/PUT/DELETE needed for v1 fixed audit types
 - [02-01]: Idempotent seed by slug check -- safe to run multiple times
+- [02-02]: Used metadata_ with validation_alias in CaseRead for SQLAlchemy metadata_ -> JSON metadata mapping
+- [02-02]: Replace entire metadata dict on update to avoid SQLAlchemy JSONB mutation tracking issues
+- [02-02]: case_number uses PostgreSQL Identity sequence for autoincrement human-readable identifiers
 
 ### Pending Todos
 
@@ -77,5 +80,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-10
-Stopped at: Completed 02-01-PLAN.md (Audit type schema registry)
-Resume file: .planning/phases/02-audit-schemas-cases/02-01-SUMMARY.md
+Stopped at: Completed 02-02-PLAN.md (Cases API with CRUD, lifecycle, filtering)
+Resume file: .planning/phases/02-audit-schemas-cases/02-02-SUMMARY.md
