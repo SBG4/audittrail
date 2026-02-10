@@ -19,6 +19,7 @@ import { useCase, useUpdateCase, useDeleteCase } from "@/hooks/useCases";
 import LifecycleControl from "@/components/cases/LifecycleControl";
 import AssigneeSelect from "@/components/cases/AssigneeSelect";
 import CaseMetadata from "@/components/cases/CaseMetadata";
+import TimelineView from "@/components/timeline/TimelineView";
 
 export default function CaseDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -337,11 +338,7 @@ export default function CaseDetailPage() {
         </TabsContent>
 
         <TabsContent value="timeline" className="pt-4">
-          <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-12">
-            <p className="text-muted-foreground">
-              Timeline will be available in a future update
-            </p>
-          </div>
+          <TimelineView caseId={id!} />
         </TabsContent>
       </Tabs>
     </div>
