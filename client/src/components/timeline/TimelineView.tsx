@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { Plus, Undo2 } from "lucide-react";
+import { Link } from "react-router";
+import { Plus, Undo2, Upload } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import TimelineRow from "./TimelineRow";
@@ -155,14 +156,22 @@ export default function TimelineView({ caseId }: TimelineViewProps) {
         <h3 className="text-sm font-medium text-muted-foreground">
           {events.length} event{events.length !== 1 ? "s" : ""}
         </h3>
-        <Button
-          size="sm"
-          onClick={handleAddEvent}
-          disabled={createEvent.isPending}
-        >
-          <Plus className="size-4 mr-1" />
-          {createEvent.isPending ? "Adding..." : "Add Event"}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Link to={`/cases/${caseId}/import`}>
+            <Button size="sm" variant="outline">
+              <Upload className="size-4 mr-1" />
+              Import
+            </Button>
+          </Link>
+          <Button
+            size="sm"
+            onClick={handleAddEvent}
+            disabled={createEvent.isPending}
+          >
+            <Plus className="size-4 mr-1" />
+            {createEvent.isPending ? "Adding..." : "Add Event"}
+          </Button>
+        </div>
       </div>
 
       {/* Empty state */}

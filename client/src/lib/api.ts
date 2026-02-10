@@ -86,4 +86,14 @@ export const api = {
       method: "DELETE",
     });
   },
+
+  upload<T>(url: string, file: File, fieldName: string = "file"): Promise<T> {
+    const formData = new FormData();
+    formData.append(fieldName, file);
+    // Don't set Content-Type -- browser sets it with multipart boundary
+    return request<T>(url, {
+      method: "POST",
+      body: formData,
+    });
+  },
 };
