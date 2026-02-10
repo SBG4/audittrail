@@ -1,0 +1,123 @@
+{% extends "reports/base.html" %}
+
+{% block title %}Case #{{ case.case_number }} - Timeline Report{% endblock %}
+
+{% block content %}
+
+{# Cover Page #}
+<div class="cover-page">
+  <h1 class="report-title">Audit Case Report</h1>
+  <h2 class="report-subtitle">Quick Timeline</h2>
+  <div class="case-title">{{ case.title }}</div>
+  <div class="case-number">Case #{{ case.case_number }}</div>
+  <div class="generated-date">Generated {{ generated_at }}</div>
+</div>
+
+{# Case Summary #}
+<h2>Case Summary</h2>
+
+<table class="metadata-table">
+  <tr>
+    <td>Case Number</td>
+    <td>#{{ case.case_number }}</td>
+  </tr>
+  <tr>
+    <td>Title</td>
+    <td>{{ case.title }}</td>
+  </tr>
+  <tr>
+    <td>Audit Type</td>
+    <td>{{ audit_type.name }}</td>
+  </tr>
+  <tr>
+    <td>Status</td>
+    <td>{{ case.status }}</td>
+  </tr>
+  <tr>
+    <td>Assigned To</td>
+    <td>{{ assigned_to }}</td>
+  </tr>
+  <tr>
+    <td>Created By</td>
+    <td>{{ created_by }}</td>
+  </tr>
+  <tr>
+    <td>Created At</td>
+    <td>{{ case.created_at }}</td>
+  </tr>
+  <tr>
+    <td>Updated At</td>
+    <td>{{ case.updated_at }}</td>
+  </tr>
+  {% for field in metadata_fields %}
+  <tr>
+    <td>{{ field.label }}</td>
+    <td>{{ field.value }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% if case.description %}
+<h3>Description</h3>
+<div class="description-text">{{ case.description }}</div>
+{% endif %}
+
+{# Timeline Events #}
+<h2>Timeline Events</h2>
+
+{% if events %}
+<table>
+  <thead>
+    <tr>
+      <th style="width: 10%;">Date</th>
+      <th style="width: 7%;">Time</th>
+      <th style="width: 8%;">Type</th>
+      <th style="width: 18%;">File Name</th>
+      <th style="width: 7%;">Count</th>
+      <th style="width: 35%;">Description</th>
+      <th style="width: 15%;">File Type</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for event in events %}
+    <tr>
+      <td>{{ event.event_date_formatted }}</td>
+      <td>{{ event.event_time_formatted }}</td>
+      <td>
+        <span class="badge badge-{{ event.event_type }}">{{ event.event_type }}</span>
+      </td>
+      <td>{{ event.file_name or "—" }}</td>
+      <td>{{ event.file_count if event.file_count else "—" }}</td>
+      <td>{{ event.file_description or "—" }}</td>
+      <td>{{ event.file_type or "—" }}</td>
+    </tr>
+    {% if event.has_batches %}
+    <tr>
+      <td colspan="7">
+        <div class="file-batches">
+          <strong>File Batches:</strong>
+          {% for batch in event.file_batches %}
+          <div class="file-batch-item">
+            <span class="file-batch-label">{{ batch.label }}</span>
+            — {{ batch.file_count }} file(s)
+            {% if batch.file_types %} | Types: {{ batch.file_types }}{% endif %}
+            {% if batch.description %} | {{ batch.description }}{% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </td>
+    </tr>
+    {% endif %}
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="placeholder">No events recorded for this case.</p>
+{% endif %}
+
+{# Footer #}
+<div class="report-footer">
+  Generated on {{ generated_at }} by {{ generated_by }} — AuditTrail
+</div>
+
+{% endblock %}

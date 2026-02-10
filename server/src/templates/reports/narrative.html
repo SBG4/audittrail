@@ -1,0 +1,313 @@
+{% extends "reports/base.html" %}
+
+{% block title %}Case #{{ case.case_number }} - Narrative Report{% endblock %}
+
+{% block content %}
+
+{# Cover Page #}
+<div class="cover-page">
+  <h1 class="report-title">Audit Case Report</h1>
+  <h2 class="report-subtitle">Detailed Narrative</h2>
+  <div class="case-title">{{ case.title }}</div>
+  <div class="case-number">Case #{{ case.case_number }}</div>
+  <div class="generated-date">Generated {{ generated_at }}</div>
+</div>
+
+{# Executive Summary #}
+<h2>Executive Summary</h2>
+
+<p>
+  This report covers audit case <strong>#{{ case.case_number }}</strong>
+  (<em>{{ case.title }}</em>), a <strong>{{ audit_type.name }}</strong> investigation.
+  The case currently has a status of <strong>{{ case.status }}</strong>
+  and is assigned to <strong>{{ assigned_to }}</strong>.
+</p>
+
+{% if stats.total_events > 0 %}
+<p>
+  The timeline spans <strong>{{ stats.total_events }}</strong> event(s) recorded
+  between <strong>{{ stats.first_date }}</strong> and <strong>{{ stats.last_date }}</strong>,
+  involving a total of <strong>{{ stats.total_file_count }}</strong> file(s).
+</p>
+{% else %}
+<p>No events have been recorded for this case yet.</p>
+{% endif %}
+
+{# Key Metrics #}
+<div class="stats-grid">
+  <div class="stat-box">
+    <div class="stat-value">{{ stats.total_events }}</div>
+    <div class="stat-label">Total Events</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-value">{{ stats.findings_count }}</div>
+    <div class="stat-label">Findings</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-value">{{ stats.actions_count }}</div>
+    <div class="stat-label">Actions</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-value">{{ stats.notes_count }}</div>
+    <div class="stat-label">Notes</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-value">{{ stats.total_file_count }}</div>
+    <div class="stat-label">Total Files</div>
+  </div>
+</div>
+
+{# Case Details #}
+<h2>Case Details</h2>
+
+<table class="metadata-table">
+  <tr>
+    <td>Case Number</td>
+    <td>#{{ case.case_number }}</td>
+  </tr>
+  <tr>
+    <td>Title</td>
+    <td>{{ case.title }}</td>
+  </tr>
+  <tr>
+    <td>Audit Type</td>
+    <td>{{ audit_type.name }}</td>
+  </tr>
+  <tr>
+    <td>Status</td>
+    <td>{{ case.status }}</td>
+  </tr>
+  <tr>
+    <td>Assigned To</td>
+    <td>{{ assigned_to }}</td>
+  </tr>
+  <tr>
+    <td>Created By</td>
+    <td>{{ created_by }}</td>
+  </tr>
+  <tr>
+    <td>Created At</td>
+    <td>{{ case.created_at }}</td>
+  </tr>
+  <tr>
+    <td>Updated At</td>
+    <td>{{ case.updated_at }}</td>
+  </tr>
+  {% for field in metadata_fields %}
+  <tr>
+    <td>{{ field.label }}</td>
+    <td>{{ field.value }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% if case.description %}
+<h3>Description</h3>
+<div class="description-text">{{ case.description }}</div>
+{% endif %}
+
+{# Findings #}
+<h2 class="new-page">Findings</h2>
+
+{% set findings = [] %}
+{% for event in events %}
+  {% if event.event_type == "finding" %}
+    {% if findings.append(event) %}{% endif %}
+  {% endif %}
+{% endfor %}
+
+{% if findings %}
+{% for event in findings %}
+<div class="numbered-item finding">
+  <div class="item-header">
+    Finding {{ loop.index }} — {{ event.event_date_formatted }}
+    {% if event.event_time_formatted != "N/A" %} at {{ event.event_time_formatted }}{% endif %}
+  </div>
+  {% if event.file_name %}
+  <div class="item-details">
+    <strong>File:</strong> {{ event.file_name }}
+    {% if event.file_count %} ({{ event.file_count }} file(s)){% endif %}
+    {% if event.file_type %} | Type: {{ event.file_type }}{% endif %}
+  </div>
+  {% endif %}
+  {% if event.file_description %}
+  <p>{{ event.file_description }}</p>
+  {% endif %}
+  {% if event.has_batches %}
+  <div class="file-batches">
+    <strong>Associated File Batches:</strong>
+    {% for batch in event.file_batches %}
+    <div class="file-batch-item">
+      <span class="file-batch-label">{{ batch.label }}</span>
+      — {{ batch.file_count }} file(s)
+      {% if batch.file_types %} | Types: {{ batch.file_types }}{% endif %}
+      {% if batch.description %} | {{ batch.description }}{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endfor %}
+{% else %}
+<p class="placeholder">No findings recorded.</p>
+{% endif %}
+
+{# Actions Taken #}
+<h2>Actions Taken</h2>
+
+{% set actions = [] %}
+{% for event in events %}
+  {% if event.event_type == "action" %}
+    {% if actions.append(event) %}{% endif %}
+  {% endif %}
+{% endfor %}
+
+{% if actions %}
+{% for event in actions %}
+<div class="numbered-item action">
+  <div class="item-header">
+    Action {{ loop.index }} — {{ event.event_date_formatted }}
+    {% if event.event_time_formatted != "N/A" %} at {{ event.event_time_formatted }}{% endif %}
+  </div>
+  {% if event.file_name %}
+  <div class="item-details">
+    <strong>File:</strong> {{ event.file_name }}
+    {% if event.file_count %} ({{ event.file_count }} file(s)){% endif %}
+    {% if event.file_type %} | Type: {{ event.file_type }}{% endif %}
+  </div>
+  {% endif %}
+  {% if event.file_description %}
+  <p>{{ event.file_description }}</p>
+  {% endif %}
+  {% if event.has_batches %}
+  <div class="file-batches">
+    <strong>Associated File Batches:</strong>
+    {% for batch in event.file_batches %}
+    <div class="file-batch-item">
+      <span class="file-batch-label">{{ batch.label }}</span>
+      — {{ batch.file_count }} file(s)
+      {% if batch.file_types %} | Types: {{ batch.file_types }}{% endif %}
+      {% if batch.description %} | {{ batch.description }}{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endfor %}
+{% else %}
+<p class="placeholder">No actions recorded.</p>
+{% endif %}
+
+{# Supporting Notes #}
+<h2>Supporting Notes</h2>
+
+{% set notes = [] %}
+{% for event in events %}
+  {% if event.event_type == "note" %}
+    {% if notes.append(event) %}{% endif %}
+  {% endif %}
+{% endfor %}
+
+{% if notes %}
+{% for event in notes %}
+<div class="numbered-item note">
+  <div class="item-header">
+    Note {{ loop.index }} — {{ event.event_date_formatted }}
+    {% if event.event_time_formatted != "N/A" %} at {{ event.event_time_formatted }}{% endif %}
+  </div>
+  {% if event.file_name %}
+  <div class="item-details">
+    <strong>File:</strong> {{ event.file_name }}
+    {% if event.file_count %} ({{ event.file_count }} file(s)){% endif %}
+    {% if event.file_type %} | Type: {{ event.file_type }}{% endif %}
+  </div>
+  {% endif %}
+  {% if event.file_description %}
+  <p>{{ event.file_description }}</p>
+  {% endif %}
+  {% if event.has_batches %}
+  <div class="file-batches">
+    <strong>Associated File Batches:</strong>
+    {% for batch in event.file_batches %}
+    <div class="file-batch-item">
+      <span class="file-batch-label">{{ batch.label }}</span>
+      — {{ batch.file_count }} file(s)
+      {% if batch.file_types %} | Types: {{ batch.file_types }}{% endif %}
+      {% if batch.description %} | {{ batch.description }}{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endfor %}
+{% else %}
+<p class="placeholder">No supporting notes recorded.</p>
+{% endif %}
+
+{# Complete Timeline #}
+<h2 class="new-page">Complete Timeline</h2>
+
+{% if events %}
+<table>
+  <thead>
+    <tr>
+      <th style="width: 10%;">Date</th>
+      <th style="width: 7%;">Time</th>
+      <th style="width: 8%;">Type</th>
+      <th style="width: 18%;">File Name</th>
+      <th style="width: 7%;">Count</th>
+      <th style="width: 35%;">Description</th>
+      <th style="width: 15%;">File Type</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for event in events %}
+    <tr>
+      <td>{{ event.event_date_formatted }}</td>
+      <td>{{ event.event_time_formatted }}</td>
+      <td>
+        <span class="badge badge-{{ event.event_type }}">{{ event.event_type }}</span>
+      </td>
+      <td>{{ event.file_name or "—" }}</td>
+      <td>{{ event.file_count if event.file_count else "—" }}</td>
+      <td>{{ event.file_description or "—" }}</td>
+      <td>{{ event.file_type or "—" }}</td>
+    </tr>
+    {% if event.has_batches %}
+    <tr>
+      <td colspan="7">
+        <div class="file-batches">
+          <strong>File Batches:</strong>
+          {% for batch in event.file_batches %}
+          <div class="file-batch-item">
+            <span class="file-batch-label">{{ batch.label }}</span>
+            — {{ batch.file_count }} file(s)
+            {% if batch.file_types %} | Types: {{ batch.file_types }}{% endif %}
+            {% if batch.description %} | {{ batch.description }}{% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </td>
+    </tr>
+    {% endif %}
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="placeholder">No events recorded for this case.</p>
+{% endif %}
+
+{# Conclusions #}
+<h2>Conclusions</h2>
+<p class="placeholder">[Add conclusions here]</p>
+
+{# Recommendations #}
+<h2>Recommendations</h2>
+<p class="placeholder">[Add recommendations here]</p>
+
+{# Footer #}
+<div class="report-footer">
+  Generated on {{ generated_at }} by {{ generated_by }} — AuditTrail
+</div>
+
+{% endblock %}

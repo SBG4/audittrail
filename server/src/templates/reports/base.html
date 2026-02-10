@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Audit Case Report{% endblock %}</title>
+  <style>
+    /* Reset and base */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Page setup for PDF */
+    @page {
+      size: A4;
+      margin: 2cm 2cm 2.5cm 2cm;
+
+      @top-center {
+        content: "AuditTrail Report";
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 8pt;
+        color: #999;
+      }
+
+      @bottom-center {
+        content: "Page " counter(page) " of " counter(pages);
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 8pt;
+        color: #999;
+      }
+    }
+
+    @page :first {
+      @top-center {
+        content: none;
+      }
+      @bottom-center {
+        content: none;
+      }
+    }
+
+    /* Typography */
+    body {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 10pt;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: Arial, Helvetica, sans-serif;
+      color: #2c3e50;
+      margin-top: 0.8em;
+      margin-bottom: 0.4em;
+    }
+
+    h1 {
+      font-size: 22pt;
+      border-bottom: 3px solid #2c3e50;
+      padding-bottom: 0.3em;
+    }
+
+    h2 {
+      font-size: 14pt;
+      border-bottom: 1px solid #bdc3c7;
+      padding-bottom: 0.2em;
+      margin-top: 1.2em;
+    }
+
+    h3 {
+      font-size: 11pt;
+      margin-top: 0.8em;
+    }
+
+    p {
+      margin-bottom: 0.6em;
+    }
+
+    /* Cover page */
+    .cover-page {
+      text-align: center;
+      padding-top: 30%;
+      page-break-after: always;
+    }
+
+    .cover-page .report-title {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 28pt;
+      font-weight: bold;
+      color: #2c3e50;
+      margin-bottom: 0.3em;
+      border: none;
+    }
+
+    .cover-page .report-subtitle {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 16pt;
+      color: #7f8c8d;
+      margin-bottom: 2em;
+      border: none;
+    }
+
+    .cover-page .case-title {
+      font-size: 14pt;
+      color: #34495e;
+      margin-bottom: 0.5em;
+    }
+
+    .cover-page .case-number {
+      font-family: "Courier New", monospace;
+      font-size: 12pt;
+      color: #7f8c8d;
+      margin-bottom: 2em;
+    }
+
+    .cover-page .generated-date {
+      font-size: 10pt;
+      color: #95a5a6;
+      margin-top: 3em;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.8em 0;
+      font-size: 9pt;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 6px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background-color: #2c3e50;
+      color: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: bold;
+      font-size: 8.5pt;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    tr {
+      page-break-inside: avoid;
+    }
+
+    /* Metadata table (2-column key-value) */
+    .metadata-table {
+      width: 100%;
+    }
+
+    .metadata-table td:first-child {
+      width: 30%;
+      font-weight: bold;
+      background-color: #f5f6fa;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 9pt;
+    }
+
+    .metadata-table td:last-child {
+      width: 70%;
+    }
+
+    /* Event type badges */
+    .badge {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 7.5pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .badge-finding {
+      background-color: #e74c3c;
+      color: #fff;
+    }
+
+    .badge-action {
+      background-color: #3498db;
+      color: #fff;
+    }
+
+    .badge-note {
+      background-color: #95a5a6;
+      color: #fff;
+    }
+
+    /* File batch sub-section */
+    .file-batches {
+      margin: 4px 0 4px 12px;
+      font-size: 8pt;
+      color: #555;
+    }
+
+    .file-batch-item {
+      margin-bottom: 2px;
+      padding: 2px 0;
+    }
+
+    .file-batch-label {
+      font-weight: bold;
+    }
+
+    /* Section breaks */
+    .new-page {
+      page-break-before: always;
+    }
+
+    .no-break {
+      page-break-inside: avoid;
+    }
+
+    /* Footer info */
+    .report-footer {
+      margin-top: 2em;
+      padding-top: 0.5em;
+      border-top: 1px solid #ddd;
+      font-size: 8pt;
+      color: #999;
+      text-align: center;
+    }
+
+    /* Stats summary */
+    .stats-grid {
+      display: flex;
+      gap: 16px;
+      margin: 0.8em 0;
+      flex-wrap: wrap;
+    }
+
+    .stat-box {
+      flex: 1;
+      min-width: 100px;
+      background-color: #f5f6fa;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 8px 12px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 18pt;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+
+    .stat-label {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 7.5pt;
+      color: #7f8c8d;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Numbered items (findings, actions, notes) */
+    .numbered-item {
+      margin-bottom: 1em;
+      padding: 8px 12px;
+      border-left: 3px solid #ddd;
+      page-break-inside: avoid;
+    }
+
+    .numbered-item.finding {
+      border-left-color: #e74c3c;
+    }
+
+    .numbered-item.action {
+      border-left-color: #3498db;
+    }
+
+    .numbered-item.note {
+      border-left-color: #95a5a6;
+    }
+
+    .item-header {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 9pt;
+      font-weight: bold;
+      color: #555;
+      margin-bottom: 4px;
+    }
+
+    .item-details {
+      font-size: 9pt;
+      color: #555;
+      margin-top: 2px;
+    }
+
+    /* Placeholder text */
+    .placeholder {
+      color: #bdc3c7;
+      font-style: italic;
+    }
+
+    /* Description */
+    .description-text {
+      background-color: #fafafa;
+      border-left: 3px solid #3498db;
+      padding: 8px 12px;
+      margin: 0.5em 0;
+    }
+  </style>
+</head>
+<body>
+  {% block content %}{% endblock %}
+</body>
+</html>
