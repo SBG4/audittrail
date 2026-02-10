@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-10)
 
 **Core value:** Auditors can rapidly document and report on data movement incidents with a seamless inline editing experience that handles both individual events and bulk file operations without friction.
-**Current focus:** Phase 4 Complete - Ready for Phase 5
+**Current focus:** Phase 5 Complete - Ready for Phase 6
 
 ## Current Position
 
-Phase: 4 of 9 (File Batch Grouping) -- COMPLETE
-Plan: 3 of 3 in current phase (all complete)
+Phase: 5 of 9 (Data Import) -- COMPLETE
+Plan: 4 of 4 in current phase (all complete)
 Status: Phase Complete
-Last activity: 2026-02-10 -- Completed 04-03-PLAN.md (Batch quick-add templates)
+Last activity: 2026-02-10 -- Completed 05-04-PLAN.md (Batch event creation)
 
-Progress: [==============] 45%
+Progress: [================] 55%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 17
+- Total plans completed: 21
 - Average duration: 4min
-- Total execution time: 1.1 hours
+- Total execution time: 1.4 hours
 
 **By Phase:**
 
@@ -31,9 +31,10 @@ Progress: [==============] 45%
 | 02-audit-schemas-cases | 5/5 | 15min | 3min |
 | 03-timeline-events | 5/5 | 15min | 3min |
 | 04-file-batch-grouping | 3/3 | 9min | 3min |
+| 05-data-import | 4/4 | 14min | 4min |
 
 **Recent Trend:**
-- Last 5 plans: 03-05 (3min), 04-01 (3min), 04-02 (3min), 04-03 (3min)
+- Last 5 plans: 04-03 (3min), 05-01 (5min), 05-02 (2min), 05-03 (5min), 05-04 (2min)
 - Trend: stable-fast
 
 *Updated after each plan completion*
@@ -90,6 +91,15 @@ Recent decisions affecting current work:
 - [04-03]: Templates are client-side only (no backend storage) -- 6 presets covering common audit scenarios
 - [04-03]: Template selection overwrites all specified fields (intentional one-shot action)
 - [04-03]: Custom template provides blank slate for fully manual entry
+- [05-01]: Used openpyxl (read_only, data_only) + chardet for encoding detection + csv.Sniffer for dialect detection
+- [05-01]: In-memory session storage for import flow (upload -> validate -> confirm), 1-hour expiry
+- [05-01]: 10MB upload limit, supports .csv/.xlsx/.xls
+- [05-01]: Cell normalization converts datetime/date/time to ISO strings, floats to int where possible
+- [05-02]: event_date is required mapping; all other fields optional
+- [05-02]: Supports 4 date formats (YYYY-MM-DD, MM/DD/YYYY, DD/MM/YYYY, YYYY/MM/DD) and 4 time formats
+- [05-03]: Column mapping uses dropdown selects (not drag-and-drop) for simplicity
+- [05-03]: Added api.upload() method for FormData/multipart file uploads
+- [05-04]: Bulk event creation in single transaction, sequential sort_order values
 
 ### Pending Todos
 
@@ -105,5 +115,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-10
-Stopped at: Completed Phase 4 (File Batch Grouping -- all 3 plans complete)
-Resume file: .planning/phases/04-file-batch-grouping/04-03-SUMMARY.md
+Stopped at: Completed Phase 5 (Data Import -- all 4 plans complete)
+Resume file: .planning/phases/05-data-import/05-04-SUMMARY.md

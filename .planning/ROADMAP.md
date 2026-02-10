@@ -103,13 +103,13 @@ Plans:
   1. User can upload an Excel or CSV file and see its contents parsed correctly (handling various encodings and formats)
   2. User can visually map spreadsheet columns to event fields using a drag-and-drop or selection-based wizard
   3. User sees an import summary showing success count, error count, and per-row validation details before confirming
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 05-01: Backend file parsing (Excel/CSV with encoding detection, format handling)
-- [ ] 05-02: Column mapping API (field matching, validation against audit type schema)
-- [ ] 05-03: Column mapping wizard UI with preview and field matching
-- [ ] 05-04: Batch event creation with validation summary and error reporting
+- [x] 05-01-PLAN.md -- Backend file parsing (openpyxl + chardet, encoding detection, upload/validate/confirm endpoints)
+- [x] 05-02-PLAN.md -- Column mapping API (row validation, multi-format date/time parsing, per-row error reporting)
+- [x] 05-03-PLAN.md -- Column mapping wizard UI (FileUpload, ColumnMapper, ImportSummary, ImportPage with 3-step wizard)
+- [x] 05-04-PLAN.md -- Batch event creation with validation summary (confirm endpoint, bulk Event creation, session cleanup)
 
 ### Phase 6: Jira Integration
 **Goal**: Auditors can provide a Jira issue URL to auto-populate case metadata by scraping the internal Jira instance, with configurable field mapping per audit type
@@ -192,7 +192,7 @@ Note: Phase 5 (Data Import) and Phase 6 (Jira Integration) can execute in parall
 | 2. Audit Type Schemas & Case Management | 0/5 | Not started | - |
 | 3. Timeline & Events | 0/5 | Not started | - |
 | 4. File Batch Grouping | 0/3 | Not started | - |
-| 5. Data Import | 0/4 | Not started | - |
+| 5. Data Import | 4/4 | Complete | 2026-02-10 |
 | 6. Jira Integration | 0/4 | Not started | - |
 | 7. Report Generation - PDF & DOCX | 0/5 | Not started | - |
 | 8. Report Generation - Interactive HTML | 0/4 | Not started | - |
