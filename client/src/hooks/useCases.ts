@@ -11,15 +11,17 @@ import type {
 export function useCases(filters: CaseFilters) {
   return useQuery({
     queryKey: ["cases", filters],
-    queryFn: () => {
+    queryFn: async () => {
       const params = new URLSearchParams();
-      for (const [key, value] of Object.entries(filters)) {
-        if (value !== undefined && value !== "") {
-          params.set(key, String(value));
-        }
-      }
-      const qs = params.toString();
-      const url = qs ? `/api/cases?${qs}` : "/api/cases";
+      if (filters.status) params.set("status", filters.status);
+      if (filters.audit_type_id) params.set("audit_type_id", filters.audit_type_id);
+      if (filters.assigned_to_id) params.set("assigned_to_id", filters.assigned_to_id);
+      if (filters.search) params.set("search", filters.search);
+      if (filters.offset !== undefined) params.set("offset", String(filters.offset));
+      if (filters.limit !== undefined) params.set("limit", String(filters.limit));
+
+      const query = params.toString();
+      const url = query ? `/api/cases?${query}` : "/api/cases";
       return api.get<CaseListResponse>(url);
     },
   });
@@ -36,10 +38,10 @@ export function useCase(id: string) {
 export function useCreateCase() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: CreateCaseRequest) =>
-      api.post<Case>("/api/cases", data),
+    mutationFn: (body: CreateCaseRequest) =>
+      api.post<Case>("/api/cases", body),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["cases"] });
+      queryClient.invalidateQueries({ queryKey: ["cases"] });
     },
   });
 }
@@ -47,13 +49,11 @@ export function useCreateCase() {
 export function useUpdateCase() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, ...data }: UpdateCaseRequest & { id: string }) =>
-      api.patch<Case>(`/api/cases/${id}`, data),
+    mutationFn: ({ id, ...body }: UpdateCaseRequest & { id: string }) =>
+      api.patch<Case>(`/api/cases/${id}`, body),
     onSuccess: (_data, variables) => {
-      void queryClient.invalidateQueries({ queryKey: ["cases"] });
-      void queryClient.invalidateQueries({
-        queryKey: ["cases", variables.id],
-      });
+      queryClient.invalidateQueries({ queryKey: ["cases"] });
+      queryClient.invalidateQueries({ queryKey: ["cases", variables.id] });
     },
   });
 }
@@ -63,7 +63,7 @@ export function useDeleteCase() {
   return useMutation({
     mutationFn: (id: string) => api.delete<void>(`/api/cases/${id}`),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["cases"] });
+      queryClient.invalidateQueries({ queryKey: ["cases"] });
     },
   });
 }

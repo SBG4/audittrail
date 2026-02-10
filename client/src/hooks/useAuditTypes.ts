@@ -5,8 +5,6 @@ import type { AuditType } from "@/types/case";
 interface AuditTypeListResponse {
   items: AuditType[];
   total: number;
-  offset: number;
-  limit: number;
 }
 
 export function useAuditTypes() {
