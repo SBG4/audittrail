@@ -220,6 +220,14 @@ export default function CaseDetailPage() {
               onAssign={handleAssign}
               disabled={isUpdating}
             />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setReportDialogOpen(true)}
+            >
+              <FileText className="size-4 mr-1" />
+              Generate Report
+            </Button>
             <Button asChild variant="outline" size="sm">
               <Link to={`/cases/${id}/review`}>
                 <ClipboardCheck className="size-4 mr-1" />
@@ -355,9 +363,30 @@ export default function CaseDetailPage() {
         </TabsContent>
 
         <TabsContent value="reports" className="space-y-6 pt-4">
+          {/* PDF / DOCX Reports */}
           <div className="space-y-4">
             <h3 className="text-sm font-medium text-muted-foreground">
-              Generate Reports
+              PDF & DOCX Reports
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              Generate professional reports in PDF or Word format. Choose between
+              a quick timeline summary or a detailed narrative with findings,
+              conclusions, and recommendations.
+            </p>
+            <Button
+              variant="outline"
+              onClick={() => setReportDialogOpen(true)}
+              className="gap-2"
+            >
+              <FileText className="size-4" />
+              Generate PDF / DOCX Report
+            </Button>
+          </div>
+
+          {/* HTML Report */}
+          <div className="space-y-4 border-t pt-6">
+            <h3 className="text-sm font-medium text-muted-foreground">
+              Interactive HTML Report
             </h3>
             <p className="text-sm text-muted-foreground">
               Download a self-contained HTML report with interactive charts.
@@ -372,6 +401,14 @@ export default function CaseDetailPage() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Report generation dialog */}
+      <ReportDialog
+        caseId={id!}
+        caseNumber={case_.case_number}
+        open={reportDialogOpen}
+        onOpenChange={setReportDialogOpen}
+      />
     </div>
   );
 }
