@@ -7,6 +7,7 @@ interface InlineFieldProps {
   type?: "text" | "number" | "date" | "time";
   placeholder?: string;
   className?: string;
+  onKeyDown?: (e: React.KeyboardEvent) => void;
 }
 
 export default function InlineField({
@@ -15,6 +16,7 @@ export default function InlineField({
   type = "text",
   placeholder = "--",
   className,
+  onKeyDown: onKeyDownProp,
 }: InlineFieldProps) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(String(value ?? ""));
@@ -51,6 +53,8 @@ export default function InlineField({
     if (e.key === "Enter") {
       e.preventDefault();
       save();
+      // Forward Enter to parent for create-new-row behavior
+      onKeyDownProp?.(e);
     } else if (e.key === "Escape") {
       e.preventDefault();
       cancel();

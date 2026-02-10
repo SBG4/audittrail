@@ -3,6 +3,7 @@ import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import EventTypeIcon from "./EventTypeIcon";
 import InlineField from "./InlineField";
+import DateTimeInput from "./DateTimeInput";
 import type { TimelineEvent } from "@/types/event";
 
 interface TimelineRowProps {
@@ -13,8 +14,10 @@ interface TimelineRowProps {
     value: unknown
   ) => void;
   onDelete: (eventId: string) => void;
+  onCreateNew?: () => void;
   isUpdating?: boolean;
   isDeleting?: boolean;
+  isLastRow?: boolean;
 }
 
 const EVENT_TYPES = ["finding", "action", "note"] as const;
@@ -23,8 +26,10 @@ export default function TimelineRow({
   event,
   onFieldUpdate,
   onDelete,
+  onCreateNew,
   isUpdating,
   isDeleting,
+  isLastRow,
 }: TimelineRowProps) {
   const [typeSelectOpen, setTypeSelectOpen] = useState(false);
 
@@ -43,13 +48,20 @@ export default function TimelineRow({
     onFieldUpdate(event.id, field, parsed);
   }
 
+  function handleLastFieldKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "Enter" && isLastRow && onCreateNew) {
+      e.preventDefault();
+      onCreateNew();
+    }
+  }
+
   return (
     <tr
       className={`border-b last:border-b-0 hover:bg-muted/30 ${
         isUpdating ? "opacity-70" : ""
       }`}
     >
-      {/* Event type - click to cycle */}
+      {/* Event type - click to select */}
       <td className="px-3 py-2">
         {typeSelectOpen ? (
           <select
@@ -71,6 +83,7 @@ export default function TimelineRow({
         ) : (
           <button
             onClick={() => setTypeSelectOpen(true)}
+            tabIndex={0}
             className="cursor-pointer"
             title="Click to change type"
           >
@@ -79,22 +92,13 @@ export default function TimelineRow({
         )}
       </td>
 
-      {/* Date */}
-      <td className="px-3 py-2">
-        <InlineField
-          value={event.event_date}
-          onSave={(v) => handleFieldSave("event_date", v)}
-          type="date"
-        />
-      </td>
-
-      {/* Time */}
-      <td className="px-3 py-2">
-        <InlineField
-          value={event.event_time}
-          onSave={(v) => handleFieldSave("event_time", v)}
-          type="time"
-          placeholder="--:--"
+      {/* Date and Time combined */}
+      <td className="px-3 py-2" colSpan={2}>
+        <DateTimeInput
+          date={event.event_date}
+          time={event.event_time}
+          onDateChange={(v) => onFieldUpdate(event.id, "event_date", v)}
+          onTimeChange={(v) => onFieldUpdate(event.id, "event_time", v)}
         />
       </td>
 
@@ -132,6 +136,7 @@ export default function TimelineRow({
           value={event.file_type}
           onSave={(v) => handleFieldSave("file_type", v)}
           placeholder="File type..."
+          onKeyDown={isLastRow ? handleLastFieldKeyDown : undefined}
         />
       </td>
 

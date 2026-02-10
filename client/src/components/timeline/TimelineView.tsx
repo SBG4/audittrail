@@ -94,11 +94,8 @@ export default function TimelineView({ caseId }: TimelineViewProps) {
                 <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground w-10">
                   Type
                 </th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">
-                  Date
-                </th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">
-                  Time
+                <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground" colSpan={2}>
+                  Date / Time
                 </th>
                 <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">
                   File Name
@@ -117,19 +114,28 @@ export default function TimelineView({ caseId }: TimelineViewProps) {
               </tr>
             </thead>
             <tbody>
-              {events.map((event) => (
+              {events.map((event, index) => (
                 <TimelineRow
                   key={event.id}
                   event={event}
                   onFieldUpdate={handleFieldUpdate}
                   onDelete={handleDelete}
+                  onCreateNew={handleAddEvent}
                   isUpdating={updateEvent.isPending}
                   isDeleting={deleteEvent.isPending}
+                  isLastRow={index === events.length - 1}
                 />
               ))}
             </tbody>
           </table>
         </div>
+      )}
+
+      {/* Keyboard navigation hint */}
+      {events.length > 0 && (
+        <p className="text-xs text-muted-foreground">
+          Tab to navigate between fields. Enter on the last field to add a new event.
+        </p>
       )}
     </div>
   );
