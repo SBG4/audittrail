@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-10)
 
 **Core value:** Auditors can rapidly document and report on data movement incidents with a seamless inline editing experience that handles both individual events and bulk file operations without friction.
-**Current focus:** Phase 5 Complete - Ready for Phase 6
+**Current focus:** Phase 7 Complete - Ready for Phase 8
 
 ## Current Position
 
-Phase: 5 of 9 (Data Import) -- COMPLETE
-Plan: 4 of 4 in current phase (all complete)
+Phase: 7 of 9 (Report Generation - PDF & DOCX) -- COMPLETE
+Plan: 5 of 5 in current phase (all complete)
 Status: Phase Complete
-Last activity: 2026-02-10 -- Completed 05-04-PLAN.md (Batch event creation)
+Last activity: 2026-02-10 -- Completed 07-05-PLAN.md (Report generation UI)
 
-Progress: [================] 55%
+Progress: [====================] 78%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 21
+- Total plans completed: 26
 - Average duration: 4min
-- Total execution time: 1.4 hours
+- Total execution time: 1.7 hours
 
 **By Phase:**
 
@@ -32,9 +32,10 @@ Progress: [================] 55%
 | 03-timeline-events | 5/5 | 15min | 3min |
 | 04-file-batch-grouping | 3/3 | 9min | 3min |
 | 05-data-import | 4/4 | 14min | 4min |
+| 07-reports-pdf-docx | 5/5 | 17min | 3min |
 
 **Recent Trend:**
-- Last 5 plans: 04-03 (3min), 05-01 (5min), 05-02 (2min), 05-03 (5min), 05-04 (2min)
+- Last 5 plans: 07-01 (3min), 07-02 (3min), 07-03 (3min), 07-04 (4min), 07-05 (4min)
 - Trend: stable-fast
 
 *Updated after each plan completion*
@@ -100,6 +101,16 @@ Recent decisions affecting current work:
 - [05-03]: Column mapping uses dropdown selects (not drag-and-drop) for simplicity
 - [05-03]: Added api.upload() method for FormData/multipart file uploads
 - [05-04]: Bulk event creation in single transaction, sequential sort_order values
+- [07-01]: Report data collection returns dict (not Pydantic model) for template flexibility
+- [07-01]: Kept ReportFormat.html for Phase 8 forward compatibility
+- [07-02]: All CSS embedded in base template (no external files) for WeasyPrint self-containment
+- [07-02]: Jinja2 list append trick for filtering events by type in narrative template
+- [07-03]: WeasyPrint runs in thread pool executor to avoid blocking async event loop
+- [07-03]: Jinja2 Environment created as module-level singleton
+- [07-04]: OpenXML namespace manipulation for cell shading (python-docx doesn't expose natively)
+- [07-04]: Color scheme matches PDF: finding=red, action=blue, note=gray
+- [07-05]: Shared downloadBlob helper for auth'd file downloads (used by both HTML and PDF/DOCX)
+- [07-05]: ReportDialog with format/mode selection accessible from header and Reports tab
 
 ### Pending Todos
 
@@ -115,5 +126,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-10
-Stopped at: Completed Phase 5 (Data Import -- all 4 plans complete)
-Resume file: .planning/phases/05-data-import/05-04-SUMMARY.md
+Stopped at: Completed Phase 7 (Report Generation PDF & DOCX -- all 5 plans complete)
+Resume file: .planning/phases/07-reports-pdf-docx/07-05-SUMMARY.md

@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 4: File Batch Grouping** - Free-form file batch groups attached to events with quick-add templates
 - [ ] **Phase 5: Data Import** - Excel/CSV upload with column mapping wizard and batch event creation
 - [ ] **Phase 6: Jira Integration** - Headless browser scraping of internal Jira issues to auto-populate case metadata
-- [ ] **Phase 7: Report Generation - PDF & DOCX** - PDF and DOCX reports in both quick timeline and detailed narrative modes
+- [x] **Phase 7: Report Generation - PDF & DOCX** - PDF and DOCX reports in both quick timeline and detailed narrative modes
 - [ ] **Phase 8: Report Generation - Interactive HTML** - Self-contained offline HTML report with embedded Plotly charts and dashboard stats
 - [ ] **Phase 9: Data Completeness & Deployment Packaging** - Missing field indicators, pre-report review screen, and airgap packaging scripts
 
@@ -137,14 +137,14 @@ Plans:
   2. User can generate a PDF report in detailed narrative mode showing findings, conclusions, and recommendations
   3. User can generate a DOCX report in both timeline and narrative modes with the same content as the PDF
   4. Generated reports include all case metadata, timeline events, and file batch details
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] 07-01: Report data collection pipeline (shared across all formats)
-- [ ] 07-02: Jinja2 report templates (quick timeline and detailed narrative layouts)
-- [ ] 07-03: PDF renderer (WeasyPrint) with embedded fonts and styles
-- [ ] 07-04: DOCX renderer (python-docx) with matching layout and formatting
-- [ ] 07-05: Report generation UI (format selection, mode selection, download)
+- [x] 07-01-PLAN.md -- Report data collection pipeline (shared data service, schemas, API endpoint)
+- [x] 07-02-PLAN.md -- Jinja2 report templates (base, timeline, narrative with professional CSS)
+- [x] 07-03-PLAN.md -- PDF renderer (WeasyPrint with async thread pool, Jinja2 template rendering)
+- [x] 07-04-PLAN.md -- DOCX renderer (python-docx with styled tables, color-coded events)
+- [x] 07-05-PLAN.md -- Report generation UI (ReportDialog with format/mode selection, blob download)
 
 ### Phase 8: Report Generation - Interactive HTML
 **Goal**: Auditors can generate a self-contained interactive HTML report that opens directly from the filesystem in any browser with zero network access, featuring dashboard stats and interactive visual timeline with Plotly charts
@@ -194,7 +194,7 @@ Note: Phase 5 (Data Import) and Phase 6 (Jira Integration) can execute in parall
 | 4. File Batch Grouping | 0/3 | Not started | - |
 | 5. Data Import | 4/4 | Complete | 2026-02-10 |
 | 6. Jira Integration | 0/4 | Not started | - |
-| 7. Report Generation - PDF & DOCX | 0/5 | Not started | - |
+| 7. Report Generation - PDF & DOCX | 5/5 | Complete | 2026-02-10 |
 | 8. Report Generation - Interactive HTML | 0/4 | Not started | - |
 | 9. Data Completeness & Deployment Packaging | 0/4 | Not started | - |
 
