@@ -88,12 +88,12 @@ Plans:
   1. User can create a file batch group with label, count, description, and file types
   2. User can attach multiple file batches to a single timeline event
   3. User can use quick-add templates for common file grouping patterns (e.g., "USB file copy", "email attachment batch")
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 04-01: File batch API (CRUD, event association, batch metadata)
-- [ ] 04-02: File batch UI within timeline events (create, edit, attach multiple batches)
-- [ ] 04-03: Quick-add templates for common file grouping patterns
+- [ ] 04-01-PLAN.md -- File batch API (FileBatch model, Pydantic schemas, nested CRUD router, Alembic migration, event ownership verification)
+- [ ] 04-02-PLAN.md -- File batch UI within timeline events (TypeScript types, TanStack Query hooks, BatchList and BatchForm components)
+- [ ] 04-03-PLAN.md -- Quick-add templates for common file grouping patterns (static template data, selector component, BatchForm integration)
 
 ### Phase 5: Data Import
 **Goal**: Auditors can upload Excel or CSV files and map their columns to event fields, bulk-creating validated timeline events from pre-existing structured data
