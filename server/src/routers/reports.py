@@ -8,7 +8,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.deps import get_current_user, get_db
 from src.models.user import User
 from src.services.html_report import html_report_service
-from src.services.report_generator import collect_report_data, generate_pdf
+from src.services.report_generator import (
+    collect_report_data,
+    generate_docx,
+    generate_pdf,
+)
 
 router = APIRouter(prefix="/cases/{case_id}/reports", tags=["reports"])
 
@@ -53,14 +57,15 @@ async def generate_report(
         )
 
     if format == "docx":
-        # Placeholder -- DOCX rendering will be added in 07-04
-        return {
-            "message": "DOCX generation pending implementation",
-            "format": format,
-            "mode": mode,
-            "case_number": case_number,
-            "event_count": report_data["stats"]["total_events"],
-        }
+        docx_bytes = await generate_docx(mode=mode, data=report_data)
+        filename = f"case-{case_number}-{mode}-report.docx"
+        return StreamingResponse(
+            io.BytesIO(docx_bytes),
+            media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            headers={
+                "Content-Disposition": f'attachment; filename="{filename}"',
+            },
+        )
 
 
 @router.get("/html")
