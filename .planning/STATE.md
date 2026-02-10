@@ -10,16 +10,16 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 ## Current Position
 
 Phase: 2 of 9 (Audit Schemas & Cases)
-Plan: 2 of 5 in current phase
+Plan: 3 of 5 in current phase
 Status: Executing
-Last activity: 2026-02-10 -- Completed 02-02-PLAN.md (Cases API with CRUD, lifecycle, filtering)
+Last activity: 2026-02-10 -- Completed 02-03-PLAN.md (Case Creation UI with schema-driven forms)
 
-Progress: [======░░░░] 17%
+Progress: [=======░░░] 19%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
+- Total plans completed: 7
 - Average duration: 5min
 - Total execution time: 0.5 hours
 
@@ -28,11 +28,11 @@ Progress: [======░░░░] 17%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-infrastructure-auth | 4/4 | 26min | 7min |
-| 02-audit-schemas-cases | 2/5 | 5min | 3min |
+| 02-audit-schemas-cases | 3/5 | 8min | 3min |
 
 **Recent Trend:**
-- Last 5 plans: 01-02 (3min), 01-03 (4min), 01-04 (2min), 02-01 (2min), 02-02 (3min)
-- Trend: accelerating
+- Last 5 plans: 01-03 (4min), 01-04 (2min), 02-01 (2min), 02-02 (3min), 02-03 (3min)
+- Trend: stable-fast
 
 *Updated after each plan completion*
 
@@ -66,6 +66,10 @@ Recent decisions affecting current work:
 - [02-02]: Used metadata_ with validation_alias in CaseRead for SQLAlchemy metadata_ -> JSON metadata mapping
 - [02-02]: Replace entire metadata dict on update to avoid SQLAlchemy JSONB mutation tracking issues
 - [02-02]: case_number uses PostgreSQL Identity sequence for autoincrement human-readable identifiers
+- [02-03]: TanStack Query staleTime 5min with retry 1 for reasonable caching and error recovery
+- [02-03]: SchemaForm renders fields dynamically from JsonSchema.properties with type-based input mapping
+- [02-03]: Audit type selection resets metadata to empty object to prevent stale field values
+- [02-03]: Added patch method and 204 response handling to api helper for full CRUD support
 
 ### Pending Todos
 
@@ -80,5 +84,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-10
-Stopped at: Completed 02-02-PLAN.md (Cases API with CRUD, lifecycle, filtering)
-Resume file: .planning/phases/02-audit-schemas-cases/02-02-SUMMARY.md
+Stopped at: Completed 02-03-PLAN.md (Case Creation UI with schema-driven forms)
+Resume file: .planning/phases/02-audit-schemas-cases/02-03-SUMMARY.md
