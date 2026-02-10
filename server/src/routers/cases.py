@@ -27,7 +27,7 @@ def validate_case_metadata(metadata: dict, schema: dict) -> None:
         jsonschema.validate(instance=metadata, schema=schema)
     except jsonschema.ValidationError as e:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=f"Metadata validation failed: {e.message}",
         )
 
