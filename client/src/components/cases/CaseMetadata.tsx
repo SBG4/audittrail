@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import SchemaForm from "@/components/cases/SchemaForm";
+import JiraImportPanel from "@/components/jira/JiraImportPanel";
 import type { Case } from "@/types/case";
 
 interface CaseMetadataProps {
@@ -94,6 +95,14 @@ export default function CaseMetadata({ case_, onSave }: CaseMetadataProps) {
           );
         })}
       </div>
+
+      {/* Jira Import */}
+      <JiraImportPanel
+        auditTypeId={case_.audit_type_id}
+        onApply={(scraped) => onSave({ ...case_.metadata, ...scraped })}
+        currentMetadata={case_.metadata}
+        schema={schema}
+      />
     </div>
   );
 }

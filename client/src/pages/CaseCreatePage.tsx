@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import SchemaForm from "@/components/cases/SchemaForm";
+import JiraImportPanel from "@/components/jira/JiraImportPanel";
 import { useAuditTypes } from "@/hooks/useAuditTypes";
 import { useCreateCase } from "@/hooks/useCases";
 
@@ -146,6 +147,18 @@ export default function CaseCreatePage() {
             )}
           </CardContent>
         </Card>
+
+        {/* Jira Import */}
+        {auditTypeId && selectedAuditType && (
+          <JiraImportPanel
+            auditTypeId={auditTypeId}
+            onApply={(scraped) =>
+              setMetadata((prev) => ({ ...prev, ...scraped }))
+            }
+            currentMetadata={metadata}
+            schema={selectedAuditType.schema}
+          />
+        )}
 
         {/* Error display */}
         {createCase.isError && (
