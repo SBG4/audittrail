@@ -111,8 +111,8 @@ Deferred to future release. Tracked but not in current roadmap.
 | Mobile app | Browser on LAN is the access model |
 | OAuth / SSO login | Simple username/password sufficient for internal tool |
 | Video/audio evidence attachments | Storage complexity, not core to data movement auditing |
-| Jira API integration | No API access available — web scraping only |
-| Automated remediation workflows | Out of scope — this is documentation, not response |
+| Jira API integration | No API access available -- web scraping only |
+| Automated remediation workflows | Out of scope -- this is documentation, not response |
 
 ## Traceability
 
@@ -120,51 +120,51 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | — | Pending |
-| AUTH-02 | — | Pending |
-| AUTH-03 | — | Pending |
-| CASE-01 | — | Pending |
-| CASE-02 | — | Pending |
-| CASE-03 | — | Pending |
-| CASE-04 | — | Pending |
-| CASE-05 | — | Pending |
-| CASE-06 | — | Pending |
-| CASE-07 | — | Pending |
-| JIRA-01 | — | Pending |
-| JIRA-02 | — | Pending |
-| JIRA-03 | — | Pending |
-| JIRA-04 | — | Pending |
-| EVNT-01 | — | Pending |
-| EVNT-02 | — | Pending |
-| EVNT-03 | — | Pending |
-| EVNT-04 | — | Pending |
-| EVNT-05 | — | Pending |
-| EVNT-06 | — | Pending |
-| EVNT-07 | — | Pending |
-| EVNT-08 | — | Pending |
-| FILE-01 | — | Pending |
-| FILE-02 | — | Pending |
-| FILE-03 | — | Pending |
-| IMPT-01 | — | Pending |
-| IMPT-02 | — | Pending |
-| IMPT-03 | — | Pending |
-| REPT-01 | — | Pending |
-| REPT-02 | — | Pending |
-| REPT-03 | — | Pending |
-| REPT-04 | — | Pending |
-| REPT-05 | — | Pending |
-| REPT-06 | — | Pending |
-| COMP-01 | — | Pending |
-| COMP-02 | — | Pending |
-| INFR-01 | — | Pending |
-| INFR-02 | — | Pending |
-| INFR-03 | — | Pending |
+| AUTH-01 | Phase 1 | Pending |
+| AUTH-02 | Phase 1 | Pending |
+| AUTH-03 | Phase 1 | Pending |
+| CASE-01 | Phase 2 | Pending |
+| CASE-02 | Phase 2 | Pending |
+| CASE-03 | Phase 2 | Pending |
+| CASE-04 | Phase 2 | Pending |
+| CASE-05 | Phase 2 | Pending |
+| CASE-06 | Phase 2 | Pending |
+| CASE-07 | Phase 2 | Pending |
+| JIRA-01 | Phase 6 | Pending |
+| JIRA-02 | Phase 6 | Pending |
+| JIRA-03 | Phase 6 | Pending |
+| JIRA-04 | Phase 6 | Pending |
+| EVNT-01 | Phase 3 | Pending |
+| EVNT-02 | Phase 3 | Pending |
+| EVNT-03 | Phase 3 | Pending |
+| EVNT-04 | Phase 3 | Pending |
+| EVNT-05 | Phase 3 | Pending |
+| EVNT-06 | Phase 3 | Pending |
+| EVNT-07 | Phase 3 | Pending |
+| EVNT-08 | Phase 3 | Pending |
+| FILE-01 | Phase 4 | Pending |
+| FILE-02 | Phase 4 | Pending |
+| FILE-03 | Phase 4 | Pending |
+| IMPT-01 | Phase 5 | Pending |
+| IMPT-02 | Phase 5 | Pending |
+| IMPT-03 | Phase 5 | Pending |
+| REPT-01 | Phase 7 | Pending |
+| REPT-02 | Phase 7 | Pending |
+| REPT-03 | Phase 7 | Pending |
+| REPT-04 | Phase 8 | Pending |
+| REPT-05 | Phase 8 | Pending |
+| REPT-06 | Phase 8 | Pending |
+| COMP-01 | Phase 9 | Pending |
+| COMP-02 | Phase 9 | Pending |
+| INFR-01 | Phase 1 | Pending |
+| INFR-02 | Phase 1 | Pending |
+| INFR-03 | Phase 1 | Pending |
 
 **Coverage:**
 - v1 requirements: 39 total
-- Mapped to phases: 0
-- Unmapped: 39 ⚠️
+- Mapped to phases: 39
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-10*
-*Last updated: 2026-02-10 after initial definition*
+*Last updated: 2026-02-10 after roadmap creation*
