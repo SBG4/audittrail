@@ -93,13 +93,18 @@ async def upload_file(
             detail="Unsupported file type. Use .csv or .xlsx",
         )
 
-    # Read and validate size
-    contents = await file.read()
-    if len(contents) > MAX_UPLOAD_SIZE:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="File too large (max 10MB)",
-        )
+    # Read with streaming size check to avoid unbounded memory usage
+    chunks: list[bytes] = []
+    total_size = 0
+    while chunk := await file.read(1024 * 1024):  # 1MB chunks
+        total_size += len(chunk)
+        if total_size > MAX_UPLOAD_SIZE:
+            raise HTTPException(
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                detail="File too large (max 10MB)",
+            )
+        chunks.append(chunk)
+    contents = b"".join(chunks)
 
     # Parse the file
     try:
@@ -332,11 +337,11 @@ async def confirm_import(
     # Commit all events
     try:
         await db.commit()
-    except Exception as e:
+    except Exception:
         await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to save events: {e}",
+            detail="Failed to save imported events",
         )
 
     # Clean up session

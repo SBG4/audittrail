@@ -20,6 +20,7 @@ from src.main import app
 from src.models.case import Case
 from src.models.event import Event
 from src.models.user import User
+from src.routers.auth import _login_attempts
 
 # --- SQLite compatibility shims ---
 
@@ -66,6 +67,7 @@ TestSession = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=F
 @pytest_asyncio.fixture(autouse=True)
 async def setup_database():
     """Create all tables before each test, drop after."""
+    _login_attempts.clear()
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield

@@ -42,6 +42,11 @@ def validate_status_transition(current: str, target: str) -> None:
         )
 
 
+def _escape_like(value: str) -> str:
+    """Escape SQL LIKE wildcard characters to prevent pattern injection."""
+    return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+
 def _case_query():
     """Build a base query for cases with eagerly loaded relationships."""
     return select(Case).options(
@@ -113,10 +118,11 @@ async def list_cases(
     if assigned_to_id:
         query = query.where(Case.assigned_to_id == assigned_to_id)
     if search:
+        escaped = _escape_like(search)
         query = query.where(
             or_(
-                Case.title.ilike(f"%{search}%"),
-                Case.description.ilike(f"%{search}%"),
+                Case.title.ilike(f"%{escaped}%", escape="\\"),
+                Case.description.ilike(f"%{escaped}%", escape="\\"),
             )
         )
 

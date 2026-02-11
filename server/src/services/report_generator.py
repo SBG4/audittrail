@@ -17,7 +17,7 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml.ns import qn
 from docx.shared import Cm, Pt, RGBColor
 from fastapi import HTTPException, status
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -29,7 +29,10 @@ from src.models.user import User
 
 # Template setup
 _TEMPLATES_DIR = Path(__file__).resolve().parent.parent / "templates"
-_jinja_env = Environment(loader=FileSystemLoader(str(_TEMPLATES_DIR)))
+_jinja_env = Environment(
+    loader=FileSystemLoader(str(_TEMPLATES_DIR)),
+    autoescape=select_autoescape(["html", "xml"]),
+)
 
 # Template name mapping
 _TEMPLATE_MAP = {

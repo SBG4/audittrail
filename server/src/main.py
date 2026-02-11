@@ -1,5 +1,9 @@
-from fastapi import FastAPI
+import logging
+from contextlib import asynccontextmanager
 
+from fastapi import FastAPI, Request, Response
+
+from src.config import settings
 from src.routers.audit_types import router as audit_types_router
 from src.routers.auth import router as auth_router
 from src.routers.cases import router as cases_router
@@ -10,7 +14,32 @@ from src.routers.jira import router as jira_router
 from src.routers.reports import router as reports_router
 from src.routers.users import router as users_router
 
-app = FastAPI(title="AuditTrail", root_path="/api")
+logger = logging.getLogger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    if settings.SECRET_KEY == "change-me-in-production":
+        raise RuntimeError(
+            "FATAL: SECRET_KEY is set to the default value. "
+            "Set a strong SECRET_KEY environment variable. "
+            "Generate one with: python -c 'import secrets; print(secrets.token_urlsafe(64))'"
+        )
+    yield
+
+
+app = FastAPI(title="AuditTrail", root_path="/api", lifespan=lifespan)
+
+
+@app.middleware("http")
+async def security_headers(request: Request, call_next) -> Response:
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    return response
+
 
 app.include_router(auth_router)
 app.include_router(audit_types_router)

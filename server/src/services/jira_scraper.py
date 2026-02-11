@@ -1,3 +1,5 @@
+import ipaddress
+import socket
 from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
@@ -8,6 +10,38 @@ from playwright.async_api import async_playwright
 
 class JiraScraper:
     """Headless browser scraper for Jira issue pages."""
+
+    @staticmethod
+    def _validate_url(url: str) -> None:
+        """Validate URL scheme, hostname, and resolved IP to prevent SSRF."""
+        parsed = urlparse(url)
+        if parsed.scheme not in ("http", "https"):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="URL must start with http:// or https://",
+            )
+        if not parsed.netloc or not parsed.hostname:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid URL: missing hostname",
+            )
+
+        # Resolve hostname and block private/internal IPs
+        try:
+            resolved = socket.getaddrinfo(parsed.hostname, None)
+        except socket.gaierror:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Could not resolve hostname",
+            )
+
+        for _, _, _, _, addr in resolved:
+            ip = ipaddress.ip_address(addr[0])
+            if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="URL must not resolve to a private or reserved IP address",
+                )
 
     async def scrape_issue(
         self, url: str, timeout_ms: int = 15000
@@ -24,18 +58,7 @@ class JiraScraper:
         Raises:
             HTTPException: On timeout (504), connection failure (502), or invalid URL (400).
         """
-        # Validate URL
-        parsed = urlparse(url)
-        if parsed.scheme not in ("http", "https"):
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="URL must start with http:// or https://",
-            )
-        if not parsed.netloc:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid URL: missing hostname",
-            )
+        self._validate_url(url)
 
         try:
             async with async_playwright() as p:
